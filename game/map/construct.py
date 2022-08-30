@@ -15,20 +15,19 @@ class MeshMap():
         self.start = self.tilemap.start
         self.build_map(self.tilemap.tiles)
 
-    def build_wall(self, pos, tile_name, direction):
+    def build_wall(self, x, y, tile_name, direction):
         tile = self.tiles[tile_name].copy_to(self.root)
-        tile.set_pos(pos.x*2, -pos.y*2, 0)
+        tile.set_pos(x*2, -y*2, 0)
         tile.set_h((-direction)*90)
-        print("building wall", tile_name, pos)
 
-    def build_walls(self, pos, tiles):
+    def build_walls(self, px, py, tiles):
         # TODO: make this work like this instead:
         # a,b,c,d = int(pos.x-1), int(pos.x+1), int(pos.y-1), int(pos.y+1)
         # sub = [x[a:b] for x in grid[c:d]]
         sub = [[],[],[]]
         for y in range(3):
             for x in range(3):
-                sub[y].append(tiles[pos.x-1+x, pos.y-1+y].char)
+                sub[y].append(tiles[px-1+x, py-1+y].char)
 
         for d, direction in enumerate(DIRS.keys()):
             l = r = "none"
@@ -41,16 +40,14 @@ class MeshMap():
                     r = "out"
                 if not sub[1][2] == "#":
                     r = "in"
-                self.build_wall(pos, "l_{}_r_{}".format(l, r), -d)
+                self.build_wall(px, py, "l_{}_r_{}".format(l, r), -d)
             sub = rotate_mat3(sub)
 
-    def build_tile(self, pos, tiles):
-        if tiles[*pos].char == "#":
-            self.build_walls(pos, tiles)
-
     def build_map(self, tiles):
-        for tile in tiles:
-            self.build_tile(tile, tiles)
+        for x in range(-1,256):
+            for y in range(-1,256):
+                if tiles[x,y].char == "#":
+                    self.build_walls(x, y, tiles)
 
 
 if __name__ == "__main__":
