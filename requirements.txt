@@ -1,0 +1,3 @@
+panda3d
+panda3d-keybindings
+blend2bam
