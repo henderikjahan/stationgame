@@ -1,5 +1,5 @@
 from collections import defaultdict
-from random import randint
+from random import randint, choice
 
 '''
 # This is an old generator of mostly random shapes clumped together
@@ -88,8 +88,8 @@ class OldGenMap():
             self.grid[0][x] = "#"
             self.grid[self.size].append("#")
 '''
-            
-            
+
+
 class Rect:
     def __init__(self, x, y, w, h):
         self.x, self.y, self.w, self.h = x, y, w, h
@@ -227,7 +227,7 @@ class TileMap:
             leaf.random_shrink()
         self.corridors = self.bsp.get_corridors()
         self.apply_bsp()
-        self.start = (0,0,0)
+        self.start = choice(list(self.tiles.keys()))
 
     def apply_bsp(self):
         for leaf in self.bsp.leafs:

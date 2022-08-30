@@ -1,4 +1,4 @@
-from panda3d.core import Vec2
+from panda3d.core import Vec2, Vec3
 
 
 def load_as_dict(filename):
@@ -20,6 +20,12 @@ def multvec2(a, b):
         n[index] = a[index]*b[index]
     return n
 
+def roundvec(vec):
+    rounded = Vec3()
+    for v, value in enumerate(vec):
+        rounded[v] = int(value)
+    return rounded
+    
 def evenvec2(a, n=2):
     for index, value in enumerate(a):
         if value%2 == 1:

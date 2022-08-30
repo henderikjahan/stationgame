@@ -6,9 +6,9 @@ from panda3d.core import CardMaker
 from panda3d.core import AntialiasAttrib
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.Transitions import Transitions
-from direct.interval.IntervalGlobal import Parallel
-#from keybindings.device_listener import add_device_listener
-#from keybindings.device_listener import SinglePlayerAssigner
+from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, Func
+from keybindings.device_listener import add_device_listener
+from keybindings.device_listener import SinglePlayerAssigner
 
 from game import Game
 from game.tools import load_as_dict
@@ -19,16 +19,24 @@ class Sequencer():
         self.length = 0.5
         self.wait = self.length
         self.parallel = None
+        self.ran = False
+        base.task_mgr.add(self.update)
+        
+    def update(self, task):
+        if self.parallel and not self.ran:
+            self.finalize()
+        return task.cont
 
     def end(self):
         self.wait = self.length
         self.parallel = None
+        self.ran = False
 
     def hold(self, time):
         self.wait = time
         self.add_to_sequence()
 
-    def add_to_sequence(self, *kwargs):
+    def add(self, *kwargs):
         if not self.parallel:
             self.parallel = Parallel()
         for item in kwargs:
@@ -40,12 +48,12 @@ class Sequencer():
         func = Sequence(Wait(self.wait), Func(self.end))
         self.parallel.append(func)
         self.parallel.start()
-
+        self.ran = True
 
 loadPrcFile("config.prc")
 base = ShowBase()
 base.win.set_clear_color((0.1,0.1,0.1,1))
-#add_device_listener(assigner=SinglePlayerAssigner())
+add_device_listener(assigner=SinglePlayerAssigner())
 base.accept("escape", sys.exit)
 base.transitions = Transitions(loader)
 base.cardmaker = CardMaker("card")
