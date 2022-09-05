@@ -17,29 +17,42 @@ except ImportError:
 class Battler:
 	def __init__(self):
 		self.hp = 10
-		self.attack = 5
+		self.attack_stat = 5
 
 	def attack(self, who):
-		who.hp -= self.attack
+		who.hp -= self.attack_stat
 		
 
 player = Battler()
 enemy = Battler()
+
 print("A monster appears")
 while True:
 	print("(a)ttack / (d)efend / (p)si / (i)tem")
 	key = getch()
-	if key == "a":
+	keyc = key.decode()	# character
+	keyu = ord(key)	# unicode, escape = 27
+
+	if keyc == "a":
 		print("You attack")
 		player.attack(enemy)
-	elif key == "d":
+	elif keyc == "d":
 		print("You defend")
-	elif key == "p":
+	elif keyc == "p":
 		print("You psi")
-	elif key == "i":
+	elif keyc == "i":
 		print("You use an item")
+	elif keyu == 27:	# when you press escape
+		print("script ended")
+		break
 	else:
-		print("invalid input")
+		print("invalid input: " + str(keyc))
 		continue
 	
 	print("enemy does a thing")
+
+
+# notes for getch() (getch() returns bytecode)
+# ord(): byte -> unicode
+# chr(): unicode -> character (like a, x, r)
+# .decode(): byte -> character
