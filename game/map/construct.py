@@ -15,11 +15,17 @@ class MeshMap():
         self.start = self.tilemap.start
         self.build_map(self.tilemap.tiles)
 
+    def build_floor_ceiling(self, x, y):
+        for i in ("ceiling", "floor"):
+            tile = self.tiles[i].copy_to(self.root)
+            tile.set_pos(x, -y, 0)
+        
     def build_wall(self, x, y, tile_name, direction):
         tile = self.tiles[tile_name].copy_to(self.root)
-        tile.set_pos(x*2, -y*2, 0)
+        tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
-
+        self.build_floor_ceiling(x, y)
+        
     def build_walls(self, px, py, tiles):
         # TODO: make this work like this instead:
         # a,b,c,d = int(pos.x-1), int(pos.x+1), int(pos.y-1), int(pos.y+1)
@@ -48,6 +54,8 @@ class MeshMap():
             for y in range(-1,256):
                 if tiles[x,y].char == "#":
                     self.build_walls(x, y, tiles)
+                else:
+                    self.build_floor_ceiling(x, y)
 
 
 if __name__ == "__main__":

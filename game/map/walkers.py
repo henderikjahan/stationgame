@@ -1,4 +1,4 @@
-from panda3d.core import NodePath
+from panda3d.core import NodePath, Vec2, Vec3
 
 from .common import DIRS, OPPO
 from game.tools import roundvec
@@ -13,38 +13,40 @@ class TileWalker:
     def set_pos(self, x, y):
         self.root.set_pos(x, -y, 0)
 
-    def forward(self, duration=0.5):
-        direction = DIRS.keys()[self.direction]
-        x, y = self.root.get_xy()
-        y = -(y+DIRS[direction].y)
-        x = x + DIRS[direction].x
-        tile = self.tiles[x, -y]
+    def forward(self, duration=0.3):
+        x, y = DIRS["nesw"[self.direction]]
+        start_pos = roundvec(self.root.get_pos())
+        next_pos = Vec3(start_pos.x+x,start_pos.y+y, 0)         
+        tile = self.tiles[next_pos.x, -next_pos.y]
         if not tile.char == "#":
-            self.root.set_pos(x, y)
-        return self.root.posInterval(duration, self.root.get_pos(), startPos=pos)
+            return self.root.posInterval(duration, next_pos, startPos=start_pos)
 
-    def turn(self, a=1, duration=0.5):
+    def turn(self, a=1, duration=0.3):
         self.direction += a
-        hpr = roundvec(self.root.get_hpr(render))
-        self.root.set_h(self.root, -90*a)
-        return self.root.quatInterval(duration, self.root.get_hpr(), startHpr=hpr, blendType='easeOut')
+        self.direction %= 4
+        start_hpr = roundvec(self.root.get_hpr(render))
+        next_hpr = start_hpr+Vec3(a*-90, 0, 0) 
+        return self.root.quatInterval(duration, next_hpr, startHpr=start_hpr, blendType='easeOut')
 
 
 class CameraWalker(TileWalker):
     def __init__(self, tiles):
         super().__init__(tiles)
         base.cam.reparent_to(self.root)
-        base.cam.set_pos(0,0,1)
+        base.cam.set_pos(0,0,0.5)
+        base.camLens.set_near(0.1)
+        base.camLens.set_fov(90)
         base.task_mgr.add(self.update)
         
     def update(self, task):
+        if base.sequencer.running:
+            return task.cont
         context = base.device_listener.read_context("player")
         if context["moveforward"]:
-            self.forward()
+            base.sequencer.add(self.forward())
         elif context["turnright"]:
             base.sequencer.add(self.turn())
         elif context["turnleft"]:
             base.sequencer.add(self.turn(-1))
             
-        
         return task.cont

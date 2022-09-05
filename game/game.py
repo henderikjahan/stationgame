@@ -12,11 +12,9 @@ class Game():
 
         self.make_celest()
 
-        self.player = CameraWalker(self.map.tiles)
+        self.player = CameraWalker(self.map.tilemap.tiles)
         self.player.root.reparent_to(render)
         self.player.set_pos(*self.map.start)
-        #base.cam.set_pos((100,-100,100))
-        #base.cam.look_at((32,-32,0))
 
     def make_celest(self):
         celest = render.attach_new_node('celest')
