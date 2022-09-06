@@ -1,6 +1,7 @@
 from panda3d.core import DirectionalLight
 
 from .tools import load_as_dict
+from game.items.items import ItemGui
 from game.map.construct import MeshMap
 from game.map.walkers import CameraWalker
 
@@ -26,3 +27,5 @@ class Game():
         moon.set_p(180)
         render.set_light(moon)
         celest.set_hpr(30,30,30)
+
+        base.gui = ItemGui()

@@ -4,6 +4,7 @@ from panda3d.core import loadPrcFile
 from panda3d.core import LineSegs
 from panda3d.core import CardMaker
 from panda3d.core import AntialiasAttrib
+from panda3d.core import Filename
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.Transitions import Transitions
 from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, Func
@@ -21,7 +22,7 @@ class Sequencer():
         self.parallel = None
         self.running = False
         base.task_mgr.add(self.update, sort=10000)
-        
+
     def update(self, task):
         if self.parallel and not self.running:
             self.finalize()
@@ -51,8 +52,8 @@ class Sequencer():
         self.parallel.start()
         self.running = True
 
-        
-loadPrcFile("config.prc")
+
+loadPrcFile(Filename.expand_from("$MAIN_DIR/config.prc"))
 base = ShowBase()
 base.win.set_clear_color((0.1,0.1,0.1,1))
 add_device_listener(assigner=SinglePlayerAssigner())
@@ -60,7 +61,7 @@ base.accept("escape", sys.exit)
 base.sequencer = Sequencer()
 base.transitions = Transitions(loader)
 base.cardmaker = CardMaker("card")
-base.cardmaker.set_frame(-1,1, -1,1)
+base.cardmaker.set_frame(0,0,-1,1)
 base.linemaker = LineSegs("line")
 base.linemaker.set_thickness(1)
 base.render.set_antialias(AntialiasAttrib.MNone)
