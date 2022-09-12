@@ -7,6 +7,7 @@ from .common import DIRS
 
 from .generate import TileMap
 
+
 class MeshMap():
     def __init__(self, tiles):
         self.tiles = tiles
@@ -17,15 +18,19 @@ class MeshMap():
 
     def build_floor_ceiling(self, x, y):
         for i in ("ceiling", "floor"):
+            if (x+y)%2:
+                i += "_even"
+            else:
+                i += "_uneven"
             tile = self.tiles[i].copy_to(self.root)
             tile.set_pos(x, -y, 0)
-        
+
     def build_wall(self, x, y, tile_name, direction):
         tile = self.tiles[tile_name].copy_to(self.root)
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
         self.build_floor_ceiling(x, y)
-        
+
     def build_walls(self, px, py, tiles):
         # TODO: make this work like this instead:
         # a,b,c,d = int(pos.x-1), int(pos.x+1), int(pos.y-1), int(pos.y+1)
