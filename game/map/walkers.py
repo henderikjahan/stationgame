@@ -34,7 +34,7 @@ class CameraWalker(TileWalker):
     def __init__(self, tiles):
         super().__init__(tiles)
         base.cam.reparent_to(self.root)
-        base.cam.set_pos(0,0,0.5)
+        base.cam.set_pos(0,0,1)
         base.camLens.set_near(0.1)
         base.camLens.set_fov(90)
         base.task_mgr.add(self.update)
