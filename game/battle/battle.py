@@ -18,6 +18,8 @@ class Battler:
 	def __init__(self):
 		self.hp = 10
 		self.attack_stat = 5
+		self.ap = 1
+		
 
 	def attack(self, who):
 		who.hp -= self.attack_stat
