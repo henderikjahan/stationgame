@@ -13,10 +13,11 @@ class Game():
 
         self.make_celest()
 
-        self.player = CameraWalker(self.map.tilemap.tiles)
+        self.player = CameraWalker(self.map.tilemap)
         self.player.root.reparent_to(render)
         self.player.set_pos(*self.map.start)
-
+        render.ls()
+        
     def make_celest(self):
         celest = render.attach_new_node('celest')
         sun = celest.attach_new_node(DirectionalLight("sun"))
