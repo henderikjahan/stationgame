@@ -125,6 +125,11 @@ class Rect:
     def set(self, x, y, w, h):
         self.x, self.y, self.w, self.h = x, y, w, h
 
+    def contains(self, x, y):
+        if x > self.x and x < self.x+self.w:
+            if y > self.y and y < self.y+self.h:
+                return True
+
     def split_w(self, i):
         if i > self.w:
             raise ValueError("Can't split rect by {}".format(i))
@@ -229,6 +234,16 @@ class TileMap:
         self.apply_bsp()
         self.start = choice(list(self.tiles.keys()))
 
+    def get_leaf(self, x, y):
+        for leaf in self.bsp.leafs:
+            if leaf.rect.contains(x,y):
+                return leaf
+
+    def get_corridor_tile(self, x, y):
+        for corridor in self.bsp.get_corridors():
+            if [x,y] in corridor:
+                return corridor
+
     def apply_bsp(self):
         for leaf in self.bsp.leafs:
             for sx in range(leaf.rect.w-1):
@@ -249,6 +264,6 @@ class TileMap:
 
 
 if __name__ == "__main__":
-    gmap = Map()
-    gmap.apply_bsp()
-    print(gmap)
+    tile_map = TileMap()
+    tile_map.apply_bsp()
+    print(tile_map)

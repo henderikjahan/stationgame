@@ -16,7 +16,7 @@ from game.tools import load_as_dict
 
 class Sequencer():
     def __init__(self):
-        self.length = 0.3
+        self.length = 0.2
         self.wait = self.length
         self.parallel = None
         self.running = False

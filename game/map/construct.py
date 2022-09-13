@@ -1,20 +1,20 @@
-from random import shuffle, randint
+from random import shuffle, randint, choice
 from panda3d.core import LVector2i, Vec2
 from panda3d.core import NodePath
 
 from game.tools import multvec2, evenvec2, is_in, rotate_mat3
 from .common import DIRS
-
-from .generate import TileMap
+from .bsp_tree import bsp_tree
 
 
 class MeshMap():
     def __init__(self, tiles):
         self.tiles = tiles
         self.root = NodePath("map")
-        self.tilemap = TileMap()
-        self.start = self.tilemap.start
+        self.tilemap = bsp_tree()
+        self.start = choice(list(self.tilemap.tiles.keys()))
         self.build_map(self.tilemap.tiles)
+        self.root.flatten_strong()
 
     def build_floor_ceiling(self, x, y):
         for i in ("ceiling", "floor"):
