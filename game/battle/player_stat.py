@@ -15,7 +15,8 @@ class playerstat:
             "Base Attack": 5,	# Base attack stat
             "Physical Defense": 10,	# Damage reduction of receiving Physical attacks: damageReceived = 100/(100+defense)
             "Psi Defense": 10,	# Damage reduction of receiving Psi attacks: damageReceived = 100/(100+defense)
-            "AP": 3	# Maximum Action points, determines the amount of actions the battlers can do
+            "Turn AP": 3,	# Turn Action points, determines the amount of AP the battlers can gain per turn at start
+            "Max AP": 5,    # Maximum Action points, which can be banked
         }
         self.equipment = {}
         self.psi = {
@@ -51,6 +52,7 @@ class playerstat:
 
 
 def command_fire(stat):
+    # for testing weakness stuff
     if "Base Attack" in stat:
         return stat["Base Attack"] * 1.8
     else:
@@ -58,6 +60,7 @@ def command_fire(stat):
         return 0.0
 
 def command_armorbash(stat):
+    # for testing using alternative stats
     if "Physical Defense" in stat:
         return stat["Physical Defense"]
     else:
