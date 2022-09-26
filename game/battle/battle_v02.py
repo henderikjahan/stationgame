@@ -1,18 +1,20 @@
 import math
-
+import command_list as command
+import status_list as status
 
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
 class Battler:
-    def __init__(self, statsdict = {}, weakness = [], status = {}, name = "Unnamed"):
+    def __init__(self, statsdict = {}, weakness = [], status = {}, name = "Unnamed", battle_ref = None):
         
         self.name = name
-        self.stat_reset(statsdict)
+        self.set_true_stat(statsdict)
         self.weakness = weakness
         self.status = status
+        self.battle_ref = battle_ref
 
-    def stat_reset(self, statsdict):
-        # reset stats to the inputed statsdict
+    def set_true_stat(self, statsdict):
+        # set stats to the inputed statsdict
         # here under are the base stats
         self.stat = {
             "Current HP": 10,
@@ -46,6 +48,10 @@ class Battler:
         if self.stat["Current AP"] > self.stat["Max AP"]:
             self.stat["Current AP"] = self.stat["Max AP"]
 
+    def end_of_turn(self):
+        # at end of turn passives
+
+        pass
 
     def deal_damage_Base(self, command_power):
         # deal damage with base attack in mind
@@ -59,14 +65,30 @@ class Battler:
         end_damage = math.ceil(end_damagepre)
 
         self.stat["Current HP"] -= end_damage
+        if self.stat["Current HP"] < 0:
+            self.stat["Current HP"] = 0
 
-        return end_damage   # the return is for the printing messages
+        # message about taking damage
+        print(str(self.name) + " has taken " + str(end_damage) + " damage!")
 
-    def check_self_hp(self):
-        # checks whether the battler died
+        # checks whether it's felled
         if self.stat["Current HP"] <= 0.0:
-            print(str(self.name) + " has died!")
-            # lacks removing self or messaging a control function
+            self.apply_felled_status()
+
+        return end_damage   # Returns resulting damage
+
+    def apply_felled_status(self):
+        print(str(self.name) + " has been felled!")
+
+        self.status["Felled"] = status.felled(
+            name= "Felled",
+            turn= None,
+            strength= 1,
+            afflicted_object= self
+        )
+        
+        if self.battle_ref != None:
+            self.battle_ref.check_victory()
 
     def check_ap_cost(self, cost = 1):
         # mainly usefull for enemies for checking what's the best option
@@ -87,7 +109,6 @@ class Battler:
             return True
 
 
-
     # to-do in battler:
     #   status handling
     #   passive handling
@@ -96,13 +117,14 @@ class Battler:
 
 # <-- Player battler class -->
 class Player_Battler(Battler):
-    def __init__(self, statsdict = {}, weakness = [], status = {}, equipment = {}, psi = {}):
+    def __init__(self, statsdict = {}, weakness = [], status = {}, equipment = {}, psi = {}, battle_ref = None):
 
         Battler.__init__(self, 
         statsdict = statsdict, 
         weakness = weakness, 
         status = status,
-        name = "Player"
+        name = "Player",
+        battle_ref= battle_ref
         )
 
         self.equipment = equipment
@@ -113,132 +135,164 @@ class Player_Battler(Battler):
             str(self.name) + " is too low!"
         )
 
-# <-- battle functions -->
-# -main battle function-
-def battle(player_gl, enemies_data):
+
+
+# <-- battle class -->
+class Battle_Gameplay:
+    def __init__(self, player_gl, enemies_data):
     
-    print("\nStart Battle\n")
-
-    # --Variable Setup--
-    player_battler = Player_Battler(
-        statsdict = player_gl.stat,
-        equipment = player_gl.equipment,
-        psi = player_gl.psi
-    )
-
-    # Change everything enemy related later, due to there being only one enemy
-    enemies_list = []
-    for enemy_data in enemies_data:
-        item = Battler(
-            name = enemy_data["Enemy Name"],
-            statsdict = enemy_data["Enemy Stats"],
-            weakness = enemy_data["Enemy Weakness"]
+        # --Variable Setup--
+        self.player_battler = Player_Battler(
+            statsdict = player_gl.stat,
+            equipment = player_gl.equipment,
+            battle_ref = self
+            #,psi = player_gl.psi
         )
-        enemies_list.append(item)
-    
-    # Start of battle handling
-    player_battler.start_of_battle()
-    for enemy_battler in enemies_list:
-        enemy_battler.start_of_battle()
 
-    turn = 1
+        self.enemies_list = []
+        for enemy_data in enemies_data:
+            item = Battler(
+                name = enemy_data["Enemy Name"],
+                statsdict = enemy_data["Enemy Stats"],
+                weakness = enemy_data["Enemy Weakness"],
+                battle_ref = self
+            )
+            self.enemies_list.append(item)
+        
+        self.turn = 1
+        self.exit_battle = False
 
-    while True:
+        # Starts battle
+        self.battle_loop()
+
+    def battle_loop(self):
+
+        self.start_of_battle()
+        
+        while True:
+
+            self.battle_turn()
+
+            if self.exit_battle == True:
+                print("battle exited")
+                break
+        
+        # add results here
+
+
+    def check_victory(self):
+        # checks whether the battle can be ended when either party is fully felled
+        player = self.player_battler
+        enemies = self.enemies_list
+
+        # checks player for felled status
+        if "Felled" in player.status:
+            self.exit_battle = True
+            print("\nThe Player's been felled!")
+            return
+
+        # checks all enemies for felled status
+        felled_count = 0
+        for enemy in enemies:
+            if "Felled" in enemy.status:
+                felled_count += 1
+
+        if felled_count == len(enemies):
+            self.exit_battle = True
+            print("\nAll enemies has been felled!")
+            return
+
+
+    def start_of_battle(self):
+        print("\nStart Battle\n")
+        # Start of battle handling per battler
+        self.player_battler.start_of_battle()
+        for enemy_battler in self.enemies_list:
+            enemy_battler.start_of_battle()
+
+    def battle_turn(self):
         # --Start of turn--
-        player_battler.start_of_turn()
-        for enemy_battler in enemies_list:
+        self.player_battler.start_of_turn()
+        for enemy_battler in self.enemies_list:
             enemy_battler.start_of_turn()
 
-        print("\n\n<--Turn " + str(turn) + " -->")
+        print("\n\n<--Turn " + str(self.turn) + " -->")
 
         # --Player Turn--
         print("--Player's Turn--")
-        while True: #loop is for the "case _"
-            # <Status Check>
-            print("")
-            print_output = ""
-            for enemy_battler in enemies_list:
-                print_output += str(enemy_battler.name) + " HP:" + str(enemy_battler.stat["Current HP"]) + "   "
-            print(print_output)
+        pturn_active = True
+        while pturn_active:
+            pturn_active = self.player_turn()
 
-            print("\nPlayer HP: " + str(player_battler.stat["Current HP"]) + "/" + str(player_battler.stat["Max HP"]))
-            print("Player AP: " + str(player_battler.stat["Current AP"]))
-
-            print("\n--Choose command--")
-            print("Attack (1*)| Psi | TurnPass | Exit")
-
-            takeninput = input(">Input: ").lower()
-            
-            match takeninput.split():
-                
-                case ["exit" | "e"]:
-                    print("battle exited")
-                    return
-                    # exit from this function and breaks the loop
-                    # Caution! Has Return!
-
-                case ["attack" | "a"]:
-                    command_attack(
-                        user_battler= player_battler,
-                        target_battler= enemies_list[0]
-                    )
-                    
-
-                case ["psi" | "p"]:
-                    print("choose psi")
-                    # Doesn't work at the moment
-                    while False:
-                        takeninput = input("Input: ")
-                
-                case ["turnpass" | "t" | "tp"]:
-                    print("turn passed")
-                    break
-
-                case _:
-                    print("Input not recognized")
+            if self.exit_battle == True:
+                # escape from battle
+                return  # return is used, so that enemy doesn't get a turn
         
 
+        # enemy actions
+        for enemy_battler in self.enemies_list:
+            self.enemy_turn(enemy_battler= enemy_battler)
+
+
+        # --End of turn--
+        self.turn += 1
+
+
+    def player_turn(self):
+
+        # <Status Check>
+        print("")
+        print_output = ""
+        for enemy_battler in self.enemies_list:
+            print_output += str(enemy_battler.name) + " HP:" + str(enemy_battler.stat["Current HP"]) + "   "
+        print(print_output)
+
+        print("\nPlayer HP: " + str(self.player_battler.stat["Current HP"]) + "/" + str(self.player_battler.stat["Max HP"]))
+        print("Player AP: " + str(self.player_battler.stat["Current AP"]))
+
+        print("\n--Choose command--")
+        print("Attack (1*)| Psi | TurnPass | Exit")
+
+        takeninput = input(">Input: ").lower()
+        
+        match takeninput.split():
+            
+            case ["exit" | "e"]:
+                self.exit_battle = True
+                return False
+
+            case ["attack" | "a"]:
+                command.attack(
+                    user_battler= self.player_battler,
+                    target_battler= self.enemies_list[0]
+                )
+
+            case ["psi" | "p"]:
+                print("choose psi")
+                # Doesn't work at the moment
+                while False:
+                    takeninput = input("Input: ")
+            
+            case ["turnpass" | "t" | "tp"]:
+                print("turn passed")
+                return False
+
+            case _:
+                print("Input not recognized")
+        
+        return True
+
+
+    def enemy_turn(self, enemy_battler):
         # --Enemy Turn--
-        for enemy_battler in enemies_list:
-            command_attack(
-                user_battler = enemy_battler, 
-                target_battler = player_battler)
+
+        command.attack(
+            user_battler = enemy_battler,
+            target_battler = self.player_battler)
 
         # >replace above with enemy strategy function, eventually
 
-        # --End of turn--
 
-        turn += 1
-
-
-# -smaller battle functions-
-def fell_battler(battler):
-    del battler
-
-
-# function for checking every battler's hp for hitting 0 or less
-
-
-# -command function-
-def command_attack(user_battler, target_battler):
-    
-    ap_cost = 1
-    continue_command = user_battler.reduce_self_ap(ap_cost)
-    # continue command is True or False, depending whether the cost can be paid
-
-    if continue_command:
-
-        command_power = 1.0
-        
-        raw_damage = user_battler.deal_damage_Base(command_power= command_power)
-        
-        taken_damage = target_battler.take_damage(raw_damage= raw_damage)
-        print(str(user_battler.name) + " attacked " + str(target_battler.name) + "!")
-        print(str(target_battler.name) + " has taken " + str(taken_damage) + " damage!")
-
-    else:
-        # ap cost too low
-        print(str(user_battler.name) + "'s AP is too low!")
 
 
 
@@ -264,10 +318,9 @@ enemies = [
 
 
 # --starts battle--
-if True:
-    battle(
-        player_gl = player_gl,
-        enemies_data = enemies
+random_battle = Battle_Gameplay(
+    player_gl= player_gl,
+    enemies_data= enemies
     )
 
 

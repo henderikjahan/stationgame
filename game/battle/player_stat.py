@@ -19,22 +19,6 @@ class playerstat:
             "Max AP": 5,    # Maximum Action points, which can be banked
         }
         self.equipment = {}
-        self.psi = {
-            "Fire": {
-                "Skill Name": "Fire",
-                "AP Cost": 2,
-                "Type": "psi",
-                "Attribute": "Fire",
-                "Power": command_fire
-            },
-            "ArmorBash": {
-                "Skill Name": "ArmorBash",
-                "AP Cost": 1,
-                "Type": "psi",
-                "Attribute": "None",
-                "Power": command_armorbash
-            }
-        }
 
         # changes/add stats based on playerstatdict
         for entry in playerstatdict:
@@ -49,20 +33,3 @@ class playerstat:
             self.psi[entry] = psi["entry"]
     
 
-
-
-def command_fire(stat):
-    # for testing weakness stuff
-    if "Base Attack" in stat:
-        return stat["Base Attack"] * 1.8
-    else:
-        print("Command Fire cannot find Base Attack")
-        return 0.0
-
-def command_armorbash(stat):
-    # for testing using alternative stats
-    if "Physical Defense" in stat:
-        return stat["Physical Defense"]
-    else:
-        print("Command Armorbash cannot find Physical Defense")
-        return 0.0
