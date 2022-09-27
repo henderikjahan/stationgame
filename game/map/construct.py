@@ -74,6 +74,7 @@ class MeshMap():
         tile.door = doorway.find("**/door")
         tile_texture(tile.door, self.texture, 2,5, 8)
         tile.door.wrt_reparent_to(self.root)
+        self.build_floor_ceiling(x, y)
         
     def build_map(self, tiles):
         for x in range(-1,256):
