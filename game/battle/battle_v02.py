@@ -69,7 +69,9 @@ class Battler:
             self.stat["Current HP"] = 0
 
         # message about taking damage
-        print(str(self.name) + " has taken " + str(end_damage) + " damage!")
+        str_selfname = str(self.name)
+        str_enddamage = str(end_damage)
+        print(f"{str_selfname} has taken {str_enddamage} damage!")
 
         # checks whether it's felled
         if self.stat["Current HP"] <= 0.0:
@@ -78,7 +80,8 @@ class Battler:
         return end_damage   # Returns resulting damage
 
     def apply_felled_status(self):
-        print(str(self.name) + " has been felled!")
+        str_selfname = str(self.name)
+        print(f"{str_selfname} has been felled!")
 
         self.status["Felled"] = status.felled(
             name= "Felled",
@@ -131,8 +134,9 @@ class Player_Battler(Battler):
         self.psi = psi
 
     def low_ap_message(self):
+        str_selfname = str(self.name)
         print(
-            str(self.name) + " is too low!"
+            f"{str_selfname} is too low!"
         )
 
 
@@ -161,6 +165,7 @@ class Battle_Gameplay:
         
         self.turn = 1
         self.exit_battle = False
+        self.results = "undetermined"
 
         # Starts battle
         self.battle_loop()
@@ -177,8 +182,7 @@ class Battle_Gameplay:
                 print("battle exited")
                 break
         
-        # add results here
-
+    
 
     def check_victory(self):
         # checks whether the battle can be ended when either party is fully felled
@@ -188,6 +192,7 @@ class Battle_Gameplay:
         # checks player for felled status
         if "Felled" in player.status:
             self.exit_battle = True
+            self.results = "lose"
             print("\nThe Player's been felled!")
             return
 
@@ -199,6 +204,7 @@ class Battle_Gameplay:
 
         if felled_count == len(enemies):
             self.exit_battle = True
+            self.results = "win"
             print("\nAll enemies has been felled!")
             return
 
@@ -216,7 +222,8 @@ class Battle_Gameplay:
         for enemy_battler in self.enemies_list:
             enemy_battler.start_of_turn()
 
-        print("\n\n<--Turn " + str(self.turn) + " -->")
+        str_turn = str(self.turn)
+        print(f"\n\n<--Turn {str_turn} -->")
 
         # --Player Turn--
         print("--Player's Turn--")
@@ -244,27 +251,42 @@ class Battle_Gameplay:
         print("")
         print_output = ""
         for enemy_battler in self.enemies_list:
-            print_output += str(enemy_battler.name) + " HP:" + str(enemy_battler.stat["Current HP"]) + "   "
+            # ! change this into f string
+            str_enemy = str(enemy_battler.name)
+            str_eHP = str(enemy_battler.stat["Current HP"])
+            print_output += f"{str_enemy} HP: {str_eHP}   "
         print(print_output)
 
-        print("\nPlayer HP: " + str(self.player_battler.stat["Current HP"]) + "/" + str(self.player_battler.stat["Max HP"]))
-        print("Player AP: " + str(self.player_battler.stat["Current AP"]))
+        str_plCHP = str(self.player_battler.stat["Current HP"])
+        str_plMHP = str(self.player_battler.stat["Max HP"])
+        str_plAP = str(self.player_battler.stat["Current AP"])
+        print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
+        print(f"Player AP: {str_plAP}")
 
         print("\n--Choose command--")
         print("Attack (1*)| Psi | TurnPass | Exit")
 
+        # creating a reference for the enemies
+        short_name_list = []
+        for enemy in self.enemies_list:
+            short_name_list.append(''.join(letter for letter in enemy.name if letter.isupper()))
+
         takeninput = input(">Input: ").lower()
         
-        match takeninput.split():
+        match takeninput.split(sep= ' ', maxsplit= 1):
             
             case ["exit" | "e"]:
                 self.exit_battle = True
                 return False
 
-            case ["attack" | "a"]:
-                command.attack(
+            case ["attack" | "a", *target]: 
+                #target is a single string in a list
+                # note to self, please make this more neat
+                command.targeting_tool(
                     user_battler= self.player_battler,
-                    target_battler= self.enemies_list[0]
+                    enemies_list= self.enemies_list,
+                    command_function= command.attack,
+                    target_input= target
                 )
 
             case ["psi" | "p"]:
@@ -308,12 +330,52 @@ player_gl = player_stat.playerstat()
 enemies = [
     {
         "Enemy Name": "Borger Burger",
-        "Enemy Stats": {},
+        "Enemy Stats": {
+            "Current HP": 15,
+            "Max HP": 15,
+
+            "Base Attack": 5,
+            "Physical Defense": 0,
+            "Psi Defense": 0,
+
+            "Current AP": 0,
+            "Turn AP": 1,
+            "Max AP": 5
+            },
+        "Enemy Weakness": []
+    },
+    {
+        "Enemy Name": "Magical Mayonaise",
+        "Enemy Stats": {
+            "Current HP": 8,
+            "Max HP": 8,
+
+            "Base Attack": 8,
+            "Physical Defense": 0,
+            "Psi Defense": 0,
+
+            "Current AP": 0,
+            "Turn AP": 1,
+            "Max AP": 5
+            },
         "Enemy Weakness": []
     }
-    
 ]
 
+# stat note
+if False:
+    stat = {
+        "Current HP": 10,
+        "Max HP": 10,
+
+        "Base Attack": 5,
+        "Physical Defense": 0,
+        "Psi Defense": 0,
+
+        "Current AP": 0,
+        "Turn AP": 1,
+        "Max AP": 5
+        }
 
 
 
