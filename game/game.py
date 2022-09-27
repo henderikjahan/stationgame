@@ -6,11 +6,13 @@ from game.map.walkers import CameraWalker
 
 class Game():
     def __init__(self):
-        tiles = load_as_dict("assets/bam/tiles.bam")
-        self.map = MeshMap(tiles)
+        self.map = MeshMap(
+            load_as_dict("assets/bam/tiles.bam"),
+            loader.load_texture("assets/images/tiletest.png"),
+        )
         self.map.root.reparent_to(render)
 
-        self.make_celest()
+        #self.make_celest()
 
         self.player = CameraWalker(self.map.tilemap)
         self.player.root.reparent_to(render)

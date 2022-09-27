@@ -2,14 +2,15 @@ from random import shuffle, randint, choice
 from panda3d.core import LVector2i, Vec2
 from panda3d.core import NodePath
 
-from game.tools import multvec2, evenvec2, is_in, rotate_mat3
+from game.tools import multvec2, evenvec2, is_in, rotate_mat3, tile_texture
 from .common import DIRS
 from .bsp import BSP
 
 
 class MeshMap():
-    def __init__(self, tiles):
+    def __init__(self, tiles, texture):
         self.tiles = tiles
+        self.texture = texture
         self.root = NodePath("map")
         self.flattened = self.root.attach_new_node("flattened")
         self.tilemap = BSP()
@@ -24,20 +25,22 @@ class MeshMap():
             print(s)
 
     def build_floor_ceiling(self, x, y):
-        for i in ("ceiling", "floor"):
+        for i, name in enumerate(("ceiling", "floor")):
             if (x+y)%2:
-                i += "_even"
+                name += "_even"
             else:
-                i += "_uneven"
-            tile = self.tiles[i].copy_to(self.flattened)
+                name += "_uneven"
+            tile = self.tiles[name].copy_to(self.flattened)
             tile.set_pos(x, -y, 0)
+            tile_texture(tile, self.texture, 6-i,7+i, 8)
 
     def build_wall(self, x, y, tile_name, direction):
         tile = self.tiles[tile_name].copy_to(self.flattened)
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
+        tile_texture(tile, self.texture, 0,4, 8)
         self.build_floor_ceiling(x, y)
-
+        
     def build_walls(self, px, py, tiles):
         # TODO: make this work like this instead:
         # a,b,c,d = int(pos.x-1), int(pos.x+1), int(pos.y-1), int(pos.y+1)
@@ -63,11 +66,13 @@ class MeshMap():
 
     def build_doorway(self, x, y, tiles):
         doorway = self.tiles["doorway"].copy_to(self.flattened)
+        tile_texture(doorway, self.texture, 0,4, 8)
         tile = tiles[x, y]
         doorway.set_pos(x,-y,0)
         if tiles[x,y-1].char == "#":
             doorway.set_h(90)
         tile.door = doorway.find("**/door")
+        tile_texture(tile.door, self.texture, 2,5, 8)
         tile.door.wrt_reparent_to(self.root)
         
     def build_map(self, tiles):

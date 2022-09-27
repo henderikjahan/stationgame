@@ -49,7 +49,8 @@ class CameraWalker(TileWalker):
         base.camLens.set_fov(90)
         base.task_mgr.add(self.update)
         self.light = self.root.attach_new_node(PointLight("walker"))
-        self.light.node().set_attenuation(Vec3(0.1,0.1,0.1))
+        self.light.set_z(1)
+        self.light.node().set_attenuation(Vec3(0.2,0.1,0.2))
         render.set_light(self.light)
 
         self.map_screen = MapScreen(tilemap)
