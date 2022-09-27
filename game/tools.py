@@ -38,3 +38,13 @@ def is_in(x, y, size):
 
 def rotate_mat3(sub):
     return list(zip(*sub[::-1]))
+
+
+def tile_texture(nodepath, texture, x, y, tiles_per_row):
+    texture.set_minfilter(0)
+    texture.set_magfilter(0)
+    for texture_stage in nodepath.find_all_texture_stages():
+        nodepath.set_texture(texture_stage, texture, 1)
+        w = h = 1/tiles_per_row
+        nodepath.set_tex_scale(texture_stage, w, h)
+        nodepath.set_tex_offset(texture_stage, x*w, 1-(y*w))
