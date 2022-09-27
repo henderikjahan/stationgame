@@ -8,12 +8,12 @@
 from collections import defaultdict
 import random
 from uuid import uuid4
-from .tile import Tile
+from .tile import TileWall, TileSpace
 
 
 
-def bsp_tree(w=30, h=30, optimal_block_size=6):
-    M = defaultdict(Tile)
+def bsp_tree(w=30, h=30, optimal_block_size=4):
+    M = defaultdict(TileWall)
     nodes = {}
     root = BSPNode('v', 1, 1, w - 1, h - 1)
     _recursive_split_tree_node(root, optimal_block_size)
@@ -75,11 +75,11 @@ class BSPNode(object):
 
     def get_leaf(self, x, y):
         for leaf in self.leafs.values():
-            if x > leaf.x and x < leaf.x+leaf.w-1:
-                if y > leaf.y and y < leaf.y+leaf.h-1:
+            if x >= leaf.room_x1 and x < leaf.room_x2:
+                if y >= leaf.room_y1 and y < leaf.room_y2:
                     return leaf
                 
-                
+
 def _recursive_split_tree_node(bsp_node, optimal_block_size):
     """
     Make binary space partitioning of the map.
@@ -156,7 +156,7 @@ def _fill_rooms(M, nodes):
     for node in nodes:
         for y in range(node.room_y1, node.room_y2):
             for x in range(node.room_x1, node.room_x2):
-                M[x, y].char = " "
+                M[x, y] = TileSpace()
 
 
 def _get_all_edges(bsp_nodes):
@@ -200,6 +200,7 @@ def _construct_spanning_tree(nodes, edges):
     st_edges = [first_edge]
     nodes_to_process.remove(first_edge[0])
     nodes_to_process.remove(first_edge[1])
+    tries = 0
     while nodes_to_process:
         node_uid = random.choice(st_nodes)
         for edge in filter(lambda e: node_uid in e, edges):
@@ -213,6 +214,8 @@ def _construct_spanning_tree(nodes, edges):
                 st_edges.append(edge)
                 nodes_to_process.remove(second_node_uid)
                 break
+        tries += 1
+        print(tries)
     return st_edges
 
 
@@ -224,17 +227,17 @@ def _create_corridors(M, nodes, edges):
     for edge in edges:
         n1 = nodes[edge[0]]
         n2 = nodes[edge[1]]
-        if max(n1.room_x1, n2.room_x1) < min(n1.room_x2, n2.room_x2):
+        if max(n1.room_x1, n2.room_x1) < min(n1.room_x2-1, n2.room_x2-1):
             x = random.randint(
                 max(n1.room_x1, n2.room_x1),
-                min(n1.room_x2, n2.room_x2)
+                min(n1.room_x2-1, n2.room_x2-1)
             )
-            for y in range(min(n2.room_y2, n1.room_y1), max(n2.room_y2, n1.room_y1)):
-                M[x, y].char = " "
-        elif max(n1.room_y1, n2.room_y1) < min(n1.room_y2, n2.room_y2):
+            for y in range(min(n2.room_y2-1, n1.room_y1), max(n2.room_y2-1, n1.room_y1)):
+                M[x, y] = TileSpace()
+        elif max(n1.room_y1, n2.room_y1) < min(n1.room_y2-1, n2.room_y2-1):
             y = random.randint(
                 max(n1.room_y1, n2.room_y1),
-                min(n1.room_y2, n2.room_y2)
+                min(n1.room_y2-1, n2.room_y2-1)
             )
-            for x in range(min(n2.room_x2, n1.room_x1), max(n2.room_x2, n1.room_x1)):
-                M[x, y].char = " "
+            for x in range(min(n2.room_x2-1, n1.room_x1), max(n2.room_x2-1, n1.room_x1)):
+                M[x, y] = TileSpace()

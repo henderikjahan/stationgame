@@ -4,17 +4,24 @@ from panda3d.core import NodePath
 
 from game.tools import multvec2, evenvec2, is_in, rotate_mat3
 from .common import DIRS
-from .bsp_tree import bsp_tree
+from .bsp import BSP
 
 
 class MeshMap():
     def __init__(self, tiles):
         self.tiles = tiles
         self.root = NodePath("map")
-        self.tilemap = bsp_tree()
+        self.flattened = self.root.attach_new_node("flattened")
+        self.tilemap = BSP()
         self.start = choice(list(self.tilemap.tiles.keys()))
         self.build_map(self.tilemap.tiles)
-        self.root.flatten_strong()
+        self.flattened.flatten_strong()
+        
+        for y in range(0,32):        
+            s = "" 
+            for x in range(0,32):
+                s += self.tilemap.tiles[x, y].char
+            print(s)
 
     def build_floor_ceiling(self, x, y):
         for i in ("ceiling", "floor"):
@@ -22,11 +29,11 @@ class MeshMap():
                 i += "_even"
             else:
                 i += "_uneven"
-            tile = self.tiles[i].copy_to(self.root)
+            tile = self.tiles[i].copy_to(self.flattened)
             tile.set_pos(x, -y, 0)
 
     def build_wall(self, x, y, tile_name, direction):
-        tile = self.tiles[tile_name].copy_to(self.root)
+        tile = self.tiles[tile_name].copy_to(self.flattened)
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
         self.build_floor_ceiling(x, y)
@@ -54,11 +61,22 @@ class MeshMap():
                 self.build_wall(px, py, "l_{}_r_{}".format(l, r), -d)
             sub = rotate_mat3(sub)
 
+    def build_doorway(self, x, y, tiles):
+        doorway = self.tiles["doorway"].copy_to(self.flattened)
+        tile = tiles[x, y]
+        doorway.set_pos(x,-y,0)
+        if tiles[x,y-1].char == "#":
+            doorway.set_h(90)
+        tile.door = doorway.find("**/door")
+        tile.door.wrt_reparent_to(self.root)
+        
     def build_map(self, tiles):
         for x in range(-1,256):
             for y in range(-1,256):
                 if tiles[x,y].char == "#":
                     self.build_walls(x, y, tiles)
+                elif tiles[x,y].char == "+":
+                    self.build_doorway(x,y,tiles)
                 else:
                     self.build_floor_ceiling(x, y)
 

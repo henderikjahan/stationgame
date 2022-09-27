@@ -25,9 +25,11 @@ class TileWalker:
         start_pos = roundvec(self.root.get_pos())
         next_pos = Vec3(start_pos.x+x,start_pos.y+y, 0)
         tile = self.tilemap.tiles[next_pos.x, -next_pos.y]
-        if not tile.char == "#":
+        if not tile.solid:
             base.sequencer.add(self.root.posInterval(duration, next_pos, startPos=start_pos))
             return next_pos
+        elif tile.char == "+" and not tile.is_open:
+            tile.open(duration)
 
     def rotate(self, a=1, duration=0.2):
         self.direction += a
