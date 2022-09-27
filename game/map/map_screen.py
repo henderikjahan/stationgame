@@ -35,7 +35,6 @@ class MapScreen:
 
     def draw_tile(self, x, y):
         if not (x,y) in self.explored:
-            print("drawing corridor")
             tile = self.tilemap.tiles[x, y]
             self.line_segs.set_color((0,1,1,1))
             if tile.char == "+":
@@ -50,7 +49,6 @@ class MapScreen:
 
     def draw_leaf(self, leaf):
         if not leaf in self.explored:
-            print("drawing leaf")
             self.line_segs.set_color((1,0,1,1))
             x1,y1,x2,y2 = leaf.x, leaf.y, leaf.x+leaf.w, leaf.y+leaf.h
             self.line_segs.move_to(x1,0,-y1)
