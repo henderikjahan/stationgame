@@ -2,21 +2,31 @@ from panda3d.core import LineSegs
 
 
 class MapScreen:
-    def __init__(self, tilemap):
-        map_scale = 0.06
-        self.root = base.aspect2d.attach_new_node("map screen")
+    def __init__(self, tilemap, camera):
+        map_scale = 0.1
+        self.root = camera.attach_new_node("map screen")
         self.root.set_scale(map_scale)
         self.root.set_z(tilemap.h*(map_scale*0.5))
         self.root.set_x(-(tilemap.w*(map_scale*0.5)))
-
-        self.cursor = base.loader.load_model("models/smiley")
-        self.cursor.reparent_to(self.root)
-        self.cursor.set_scale(0.5)
+        self.root.set_y(1.5)
+        self.root.setBin("fixed", 100)
+        self.root.setDepthTest(False)
+        self.root.setDepthWrite(False)
+        self.root.set_light_off()
 
         self.line_segs = LineSegs("map lines")
-        self.line_segs.set_color((1,0,1,1))
         self.tilemap = tilemap
         self.explored = []
+
+        self.line_segs.set_color((1,1,1,1))
+        self.line_segs.move_to(0,0,-1)
+        self.line_segs.draw_to(0,0,1)
+        self.line_segs.draw_to(-1,0,0)
+        self.line_segs.move_to(1,0,0)
+        self.line_segs.draw_to(0,0,1)
+        self.cursor = self.root.attach_new_node(self.line_segs.create())
+        self.cursor.set_scale(0.5)
+
 
     def draw_openings(self, leaf):
         x1,y1,x2,y2 = leaf.x, leaf.y, leaf.x+leaf.w, leaf.y+leaf.h
@@ -31,7 +41,6 @@ class MapScreen:
                 self.draw_tile(x1-1, y)
             elif not self.tilemap.tiles[x2, y].char == "#":
                 self.draw_tile(x2, y)
-
 
     def draw_tile(self, x, y):
         if not (x,y) in self.explored:
@@ -60,9 +69,10 @@ class MapScreen:
             self.draw_openings(leaf)
             #self.root.flatten_strong()
             self.explored.append(leaf)
-            
-    def update(self, x, y):
+
+    def update(self, x, y, d):
         self.cursor.set_pos(x+0.5,0,-(y+0.5))
+        self.cursor.set_r(d*90)
         leaf = self.tilemap.get_room(x, y)
         if leaf:
             self.draw_leaf(leaf)

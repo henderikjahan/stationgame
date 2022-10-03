@@ -17,9 +17,9 @@ class MeshMap():
         self.start = choice(list(self.tilemap.tiles.keys()))
         self.build_map(self.tilemap.tiles)
         self.flattened.flatten_strong()
-        
-        for y in range(0,32):        
-            s = "" 
+
+        for y in range(0,32):
+            s = ""
             for x in range(0,32):
                 s += self.tilemap.tiles[x, y].char
             print(s)
@@ -38,9 +38,9 @@ class MeshMap():
         tile = self.tiles[tile_name].copy_to(self.flattened)
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
-        tile_texture(tile, self.texture, 0,4, 8)
+        tile_texture(tile, self.texture, 3, 2, 8)
         self.build_floor_ceiling(x, y)
-        
+
     def build_walls(self, px, py, tiles):
         # TODO: make this work like this instead:
         # a,b,c,d = int(pos.x-1), int(pos.x+1), int(pos.y-1), int(pos.y+1)
@@ -66,16 +66,16 @@ class MeshMap():
 
     def build_doorway(self, x, y, tiles):
         doorway = self.tiles["doorway"].copy_to(self.flattened)
-        tile_texture(doorway, self.texture, 0,4, 8)
+        tile_texture(doorway, self.texture, 3,2, 8)
         tile = tiles[x, y]
         doorway.set_pos(x,-y,0)
         if tiles[x,y-1].char == "#":
             doorway.set_h(90)
         tile.door = doorway.find("**/door")
-        tile_texture(tile.door, self.texture, 2,5, 8)
+        tile_texture(tile.door, self.texture, 7,3, 8)
         tile.door.wrt_reparent_to(self.root)
         self.build_floor_ceiling(x, y)
-        
+
     def build_map(self, tiles):
         for x in range(-1,256):
             for y in range(-1,256):
