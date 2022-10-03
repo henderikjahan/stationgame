@@ -19,7 +19,7 @@ class TileWalker:
     def get_pos(self):
         x,y,z = self.root.get_pos()
         return x, -y
-        
+
     def forward(self, duration=0.2):
         x, y = DIRS["nesw"[self.direction]]
         start_pos = roundvec(self.root.get_pos())
@@ -41,35 +41,39 @@ class TileWalker:
 
 
 class CameraWalker(TileWalker):
-    def __init__(self, tilemap):
+    def __init__(self, tilemap, camera):
         super().__init__(tilemap)
-        base.cam.reparent_to(self.root)
-        base.cam.set_pos(0,0,1)
-        base.camLens.set_near(0.1)
-        base.camLens.set_fov(90)
+        camera.reparent_to(self.root)
+        camera.set_pos(0,0,1)
+        camera.node().get_lens().set_near(0.1)
+        camera.node().get_lens().set_fov(90)
         base.task_mgr.add(self.update)
         self.light = self.root.attach_new_node(PointLight("walker"))
         self.light.set_z(1)
-        self.light.node().set_attenuation(Vec3(0.2,0.1,0.2))
+        self.light.node().set_attenuation(Vec3(0.05,0.05,0.05))
         render.set_light(self.light)
 
-        self.map_screen = MapScreen(tilemap)
+        self.map_screen = MapScreen(tilemap, camera)
 
     def movement(self):
         context = base.device_listener.read_context("player")
-        if context["moveforward"]:
+        if context["turnright"]:
+            self.rotate(1)
+            x,y,z = self.root.get_pos()
+            self.map_screen.update(x, -y, self.direction)
+        elif context["turnleft"]:
+            self.rotate(-1)
+            x,y,z = self.root.get_pos()
+            self.map_screen.update(x, -y, self.direction)
+        elif context["moveforward"]:
             pos = self.forward()
             if pos:
                 x,y,z = pos
-                self.map_screen.update(x, -y)
-        elif context["turnright"]:
-            self.rotate(1)
-        elif context["turnleft"]:
-            self.rotate(-1)
+                self.map_screen.update(x, -y, self.direction)
         else:
             return False
         return True
-            
+
     def update(self, task):
         if base.sequencer.running:
             return task.cont
