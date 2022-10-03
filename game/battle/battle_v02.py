@@ -5,14 +5,23 @@ import status_list as status
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
 class Battler:
-    def __init__(self, statsdict = {}, weakness = [], status = {}, name = "Unnamed", battle_ref = None):
+    def __init__(self, statsdict = None, weakness = None, status = None, name = None, battle_ref = None):
         
+        if name == None:
+            name = "Unnamed"
+        if statsdict == None:
+            statsdict = {}
+        if weakness == None:
+            weakness = []
+        if status == None:
+            status = {}
+
+        self.battle_ref = battle_ref
         self.name = name
         self.set_true_stat(statsdict)
         self.weakness = weakness
         self.status = status
-        self.battle_ref = battle_ref
-
+        
     def set_true_stat(self, statsdict):
         # set stats to the inputed statsdict
         # here under are the base stats
@@ -33,25 +42,36 @@ class Battler:
             self.stat[entry] = statsdict[entry]
 
     def start_of_battle(self):
+        # set AP
+        self.stat["Current AP"] = self.stat["Turn AP"]
+        if self.stat["Current AP"] > self.stat["Max AP"]:
+            self.stat["Current AP"] = self.stat["Max AP"]
+
         # at start of battle passives
 
-
         pass
-        
 
-    def start_of_turn(self):
-        # at start of turn passives/statuses
-
+    def gain_turn_AP(self):
+        # checks whether the character is felled
+        if "Felled" in self.status:
+            return  # return ends the function prematurely, before the turn AP gain
 
         # AP
         self.stat["Current AP"] += self.stat["Turn AP"]
         if self.stat["Current AP"] > self.stat["Max AP"]:
             self.stat["Current AP"] = self.stat["Max AP"]
 
+    def start_of_turn(self):
+        # at start of turn passives/statuses
+        
+        pass
+
     def end_of_turn(self):
+        # AP
+        self.gain_turn_AP()
+
         # at end of turn passives
 
-        pass
 
     def deal_damage_Base(self, command_power):
         # deal damage with base attack in mind
@@ -89,9 +109,10 @@ class Battler:
             strength= 1,
             afflicted_object= self
         )
-        
+
         if self.battle_ref != None:
             self.battle_ref.check_victory()
+
 
     def check_ap_cost(self, cost = 1):
         # mainly usefull for enemies for checking what's the best option
@@ -120,7 +141,7 @@ class Battler:
 
 # <-- Player battler class -->
 class Player_Battler(Battler):
-    def __init__(self, statsdict = {}, weakness = [], status = {}, equipment = {}, psi = {}, battle_ref = None):
+    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, battle_ref = None):
 
         Battler.__init__(self, 
         statsdict = statsdict, 
@@ -130,6 +151,11 @@ class Player_Battler(Battler):
         battle_ref= battle_ref
         )
 
+        if equipment == None:
+            equipment = {}
+        if psi == None:
+            psi = {}
+        
         self.equipment = equipment
         self.psi = psi
 
@@ -160,6 +186,7 @@ class Battle_Gameplay:
                 statsdict = enemy_data["Enemy Stats"],
                 weakness = enemy_data["Enemy Weakness"],
                 battle_ref = self
+
             )
             self.enemies_list.append(item)
         
@@ -182,7 +209,8 @@ class Battle_Gameplay:
                 print("battle exited")
                 break
         
-    
+        print("end of battle")
+
 
     def check_victory(self):
         # checks whether the battle can be ended when either party is fully felled
@@ -217,16 +245,13 @@ class Battle_Gameplay:
             enemy_battler.start_of_battle()
 
     def battle_turn(self):
-        # --Start of turn--
-        self.player_battler.start_of_turn()
-        for enemy_battler in self.enemies_list:
-            enemy_battler.start_of_turn()
-
+        # --Start of Turn--
         str_turn = str(self.turn)
         print(f"\n\n<--Turn {str_turn} -->")
 
         # --Player Turn--
         print("--Player's Turn--")
+        self.player_battler.start_of_turn()
         pturn_active = True
         while pturn_active:
             pturn_active = self.player_turn()
@@ -234,12 +259,17 @@ class Battle_Gameplay:
             if self.exit_battle == True:
                 # escape from battle
                 return  # return is used, so that enemy doesn't get a turn
-        
+        self.player_battler.end_of_turn()
 
-        # enemy actions
+
+        # --Enemy Turn--
+        print("\n--Enemy's Turn--")
+        for enemy_battler in self.enemies_list:
+            enemy_battler.start_of_turn()
         for enemy_battler in self.enemies_list:
             self.enemy_turn(enemy_battler= enemy_battler)
-
+        for enemy_battler in self.enemies_list:
+            enemy_battler.end_of_turn()
 
         # --End of turn--
         self.turn += 1
@@ -307,11 +337,10 @@ class Battle_Gameplay:
 
     def enemy_turn(self, enemy_battler):
         # --Enemy Turn--
-
         command.attack(
             user_battler = enemy_battler,
             target_battler = self.player_battler)
-
+        
         # >replace above with enemy strategy function, eventually
 
 

@@ -50,7 +50,7 @@ def check_legality_target(target_battler, status_list = ["Felled"], check_for_il
         for status in status_list:
             if status in target_battler.status:
                 str_targetbattler = str(target_battler.name)
-                str_status = str(status.name)
+                str_status = str(status)
                 print( f"{str_targetbattler} already has been {str_status}")
                 return False
 
