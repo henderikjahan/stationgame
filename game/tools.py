@@ -41,6 +41,7 @@ def rotate_mat3(sub):
 
 
 def tile_texture(nodepath, texture, x, y, tiles_per_row):
+    y = y+1 # Innocent hack. Something is off about this math.
     texture.set_minfilter(0)
     texture.set_magfilter(0)
     for texture_stage in nodepath.find_all_texture_stages():
