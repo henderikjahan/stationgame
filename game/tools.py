@@ -1,4 +1,4 @@
-from panda3d.core import Vec2
+from panda3d.core import Vec2, Vec3
 
 
 def load_as_dict(filename):
@@ -20,6 +20,12 @@ def multvec2(a, b):
         n[index] = a[index]*b[index]
     return n
 
+def roundvec(vec):
+    rounded = Vec3()
+    for v, value in enumerate(vec):
+        rounded[v] = int(value)
+    return rounded
+    
 def evenvec2(a, n=2):
     for index, value in enumerate(a):
         if value%2 == 1:
@@ -32,3 +38,14 @@ def is_in(x, y, size):
 
 def rotate_mat3(sub):
     return list(zip(*sub[::-1]))
+
+
+def tile_texture(nodepath, texture, x, y, tiles_per_row):
+    y = y+1 # Innocent hack. Something is off about this math.
+    texture.set_minfilter(0)
+    texture.set_magfilter(0)
+    for texture_stage in nodepath.find_all_texture_stages():
+        nodepath.set_texture(texture_stage, texture, 1)
+        w = h = 1/tiles_per_row
+        nodepath.set_tex_scale(texture_stage, w, h)
+        nodepath.set_tex_offset(texture_stage, x*w, 1-(y*w))

@@ -1,38 +1,81 @@
-from panda3d.core import NodePath
+from panda3d.core import NodePath, Vec2, Vec3
+from panda3d.core import PointLight
+from direct.interval.IntervalGlobal import Func
 
 from .common import DIRS, OPPO
+from game.tools import roundvec
+from game.map.map_screen import MapScreen
 
 
-class GridWalker:
-    def __init__(self, grid):
-        self.grid = grid
+class TileWalker:
+    def __init__(self, tilemap):
+        self.tilemap = tilemap
         self.root = NodePath("walker")
         self.direction = 0
 
-    def set_pos(self, v2):
-        self.root.set_pos(int(v2.x), -int(v2.y), 0)
+    def set_pos(self, x, y):
+        self.root.set_pos(x, -y, 0)
 
-    def forward(self, duration):
-        direction = DIRS.keys()[self.direction]
-        pos = self.root.get_xy()
-        pos.y = -pos.y
-        next_tile_pos =  pos + DIRS[direction]
-        tile = self.grid[-next_tile_pos.y][next_tile_pos.x]
-        if not tile == "#":
-            self.root.set_pos()
-        return self.root.posInterval(duration, self.root.get_pos(), startPos=pos)
+    def get_pos(self):
+        x,y,z = self.root.get_pos()
+        return x, -y
 
-    def turn(self, a=1, duration=0.5):
+    def forward(self, duration=0.2):
+        x, y = DIRS["nesw"[self.direction]]
+        start_pos = roundvec(self.root.get_pos())
+        next_pos = Vec3(start_pos.x+x,start_pos.y+y, 0)
+        tile = self.tilemap.tiles[next_pos.x, -next_pos.y]
+        if not tile.solid:
+            base.sequencer.add(self.root.posInterval(duration, next_pos, startPos=start_pos))
+            return next_pos
+        elif tile.char == "+" and not tile.is_open:
+            tile.open(duration)
+
+    def rotate(self, a=1, duration=0.2):
         self.direction += a
-        hpr = round_vec(self.root.get_hpr())
-        self.root.set_h(self.root, -90)
-        return self.root.quatInterval(duration, self.root.get_hpr(), startHpr=hpr, blendType='easeOut')
+        self.direction %= 4
+        start_hpr = roundvec(self.root.get_hpr(render))
+        next_hpr = start_hpr+Vec3(a*-90, 0, 0)
+        base.sequencer.add(self.root.quatInterval(duration, next_hpr, startHpr=start_hpr, blendType='easeOut'))
+        return next_hpr
 
 
-class CameraWalker(GridWalker):
-    def __init__(self, grid):
-        super().__init__(grid)
-        base.cam.reparent_to(self.root)
-        base.cam.set_pos(0,0,1)
+class CameraWalker(TileWalker):
+    def __init__(self, tilemap, camera):
+        super().__init__(tilemap)
+        camera.reparent_to(self.root)
+        camera.set_pos(0,0,1)
+        camera.node().get_lens().set_near(0.1)
+        camera.node().get_lens().set_fov(90)
+        base.task_mgr.add(self.update)
+        self.light = self.root.attach_new_node(PointLight("walker"))
+        self.light.set_z(1)
+        self.light.node().set_attenuation(Vec3(0.05,0.05,0.05))
+        render.set_light(self.light)
 
+        self.map_screen = MapScreen(tilemap, camera)
 
+    def movement(self):
+        context = base.device_listener.read_context("player")
+        if context["turnright"]:
+            self.rotate(1)
+            x,y,z = self.root.get_pos()
+            self.map_screen.update(x, -y, self.direction)
+        elif context["turnleft"]:
+            self.rotate(-1)
+            x,y,z = self.root.get_pos()
+            self.map_screen.update(x, -y, self.direction)
+        elif context["moveforward"]:
+            pos = self.forward()
+            if pos:
+                x,y,z = pos
+                self.map_screen.update(x, -y, self.direction)
+        else:
+            return False
+        return True
+
+    def update(self, task):
+        if base.sequencer.running:
+            return task.cont
+        self.movement()
+        return task.cont

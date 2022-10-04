@@ -1,5 +1,5 @@
 from collections import defaultdict
-from random import randint
+from random import randint, choice
 
 '''
 # This is an old generator of mostly random shapes clumped together
@@ -88,8 +88,8 @@ class OldGenMap():
             self.grid[0][x] = "#"
             self.grid[self.size].append("#")
 '''
-            
-            
+
+
 class Rect:
     def __init__(self, x, y, w, h):
         self.x, self.y, self.w, self.h = x, y, w, h
@@ -124,6 +124,11 @@ class Rect:
 
     def set(self, x, y, w, h):
         self.x, self.y, self.w, self.h = x, y, w, h
+
+    def contains(self, x, y):
+        if x > self.x and x < self.x+self.w:
+            if y > self.y and y < self.y+self.h:
+                return True
 
     def split_w(self, i):
         if i > self.w:
@@ -227,7 +232,17 @@ class TileMap:
             leaf.random_shrink()
         self.corridors = self.bsp.get_corridors()
         self.apply_bsp()
-        self.start = (0,0,0)
+        self.start = choice(list(self.tiles.keys()))
+
+    def get_leaf(self, x, y):
+        for leaf in self.bsp.leafs:
+            if leaf.rect.contains(x,y):
+                return leaf
+
+    def get_corridor_tile(self, x, y):
+        for corridor in self.bsp.get_corridors():
+            if [x,y] in corridor:
+                return corridor
 
     def apply_bsp(self):
         for leaf in self.bsp.leafs:
@@ -249,6 +264,6 @@ class TileMap:
 
 
 if __name__ == "__main__":
-    gmap = Map()
-    gmap.apply_bsp()
-    print(gmap)
+    tile_map = TileMap()
+    tile_map.apply_bsp()
+    print(tile_map)
