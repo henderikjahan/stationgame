@@ -2,6 +2,7 @@ from panda3d.core import DirectionalLight
 from panda3d.core import CardMaker
 
 from .tools import load_as_dict
+from game.items.items import ItemGui
 from game.map.construct import MeshMap
 from game.map.walkers import CameraWalker
 
@@ -34,6 +35,8 @@ class Game():
         self.player.set_pos(*self.map.start)
         render.ls()
 
+        #base.gui = ItemGui()
+
     def make_celest(self):
         celest = render.attach_new_node('celest')
         sun = celest.attach_new_node(DirectionalLight("sun"))
@@ -44,3 +47,4 @@ class Game():
         moon.set_p(180)
         render.set_light(moon)
         celest.set_hpr(30,30,30)
+
