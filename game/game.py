@@ -35,6 +35,8 @@ class Game():
         self.player.set_pos(*self.map.start)
         render.ls()
 
+        #base.gui = ItemGui()
+
     def make_celest(self):
         celest = render.attach_new_node('celest')
         sun = celest.attach_new_node(DirectionalLight("sun"))
@@ -46,4 +48,3 @@ class Game():
         render.set_light(moon)
         celest.set_hpr(30,30,30)
 
-        base.gui = ItemGui()

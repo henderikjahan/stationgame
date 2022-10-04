@@ -53,7 +53,7 @@ class Sequencer():
         self.running = True
 
 
-loadPrcFile(Filename.expand_from("$MAIN_DIR/config.prc"))
+loadPrcFile(Filename.expand_from("$MAIN_DIR/settings.prc"))
 base = ShowBase()
 base.win.set_clear_color((0.1,0.1,0.1,1))
 add_device_listener(assigner=SinglePlayerAssigner())
