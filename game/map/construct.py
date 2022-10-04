@@ -32,13 +32,19 @@ class MeshMap():
                 name += "_uneven"
             tile = self.tiles[name].copy_to(self.flattened)
             tile.set_pos(x, -y, 0)
-            tile_texture(tile, self.texture, 6-i,7+i, 8)
+            
+            tx = choice((0,2,3,4)) if randint(0,4) == 0 else 0
+            if (x+y)%2 and randint(0,2): tx = 1
+            
+            tile_texture(tile, self.texture, tx,4*i, 8)
 
     def build_wall(self, x, y, tile_name, direction):
         tile = self.tiles[tile_name].copy_to(self.flattened)
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
-        tile_texture(tile, self.texture, 3, 2, 8)
+        x = randint(0,3) if tile_name == "l_none_r_none" and randint(0,1) else 0
+        tile_texture(tile, self.texture, x, 2, 8)
+        
         self.build_floor_ceiling(x, y)
 
     def build_walls(self, px, py, tiles):
@@ -66,13 +72,13 @@ class MeshMap():
 
     def build_doorway(self, x, y, tiles):
         doorway = self.tiles["doorway"].copy_to(self.flattened)
-        tile_texture(doorway, self.texture, 3,2, 8)
+        tile_texture(doorway, self.texture, 0,2, 8)
         tile = tiles[x, y]
         doorway.set_pos(x,-y,0)
         if tiles[x,y-1].char == "#":
             doorway.set_h(90)
         tile.door = doorway.find("**/door")
-        tile_texture(tile.door, self.texture, 7,3, 8)
+        tile_texture(tile.door, self.texture, 5,0, 8)
         tile.door.wrt_reparent_to(self.root)
         self.build_floor_ceiling(x, y)
 

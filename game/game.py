@@ -11,7 +11,7 @@ class Game():
     def __init__(self):
         self.map = MeshMap(
             load_as_dict("assets/bam/tiles.bam"),
-            loader.load_texture("assets/images/tiles.png"),
+            loader.load_texture("assets/images/tileset1.png"),
         )
         self.map.root.reparent_to(render)
 
