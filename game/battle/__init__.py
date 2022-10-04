@@ -1,65 +1,19 @@
 # --imports Gameplay--
 import battle_gameplay as bgp
 
-# <!> testing <!>
-# remove everything under testing when importing this file
-
-
 # --imports--
 import player_stat
+import enemy_list as enemy
 
-# --setup player stat--
+# --setup player/enemy stat--
 player_gl = player_stat.playerstat()
+    # player_gl expects a "playerstat object"
+
 enemies = [
-    {
-        "Enemy Name": "Borger Burger",
-        "Enemy Stats": {
-            "Current HP": 15,
-            "Max HP": 15,
-
-            "Base Attack": 5,
-            "Physical Defense": 0,
-            "Psi Defense": 0,
-
-            "Current AP": 0,
-            "Turn AP": 1,
-            "Max AP": 5
-            },
-        "Enemy Weakness": []
-    },
-    {
-        "Enemy Name": "Magical Mayonaise",
-        "Enemy Stats": {
-            "Current HP": 8,
-            "Max HP": 8,
-
-            "Base Attack": 8,
-            "Physical Defense": 0,
-            "Psi Defense": 0,
-
-            "Current AP": 0,
-            "Turn AP": 1,
-            "Max AP": 5
-            },
-        "Enemy Weakness": []
-    }
+    enemy.Borger_Burger,
+    enemy.Magical_Mayonaise
 ]
-
-# stat note
-if False:
-    stat = {
-        "Current HP": 10,
-        "Max HP": 10,
-
-        "Base Attack": 5,
-        "Physical Defense": 0,
-        "Psi Defense": 0,
-
-        "Current AP": 0,
-        "Turn AP": 1,
-        "Max AP": 5
-        }
-
+    # enemies expects a list of enemy classes, which are NOT objects!
 
 
 # --starts battle--
@@ -75,5 +29,3 @@ random_battle = bgp.Battle_Gameplay(
 
 # gebruik math.ceil( x ), rond omhoog af en is een int
 # math.floor( x ), rond omlaag af
-
-# at commands, mayhap

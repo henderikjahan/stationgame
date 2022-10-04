@@ -132,23 +132,33 @@ class Battler:
             self.stat["Current AP"] -= cost
             return True
 
+    def self_behaviour(self):
+        pass
 
     # to-do in battler:
     #   status handling
     #   passive handling
     #   
 
+# <-- Enemy Battler class -->
+class Enemy_Battler(Battler):
+    def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None):
+        super().__init__(statsdict, weakness, status, name, battle_ref)
+
+    def player(self):
+        return self.battle_ref.player_battler
 
 # <-- Player battler class -->
 class Player_Battler(Battler):
     def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, battle_ref = None):
 
-        Battler.__init__(self, 
-        statsdict = statsdict, 
-        weakness = weakness, 
-        status = status,
-        name = "Player",
-        battle_ref= battle_ref
+        Battler.__init__(
+            self, 
+            statsdict = statsdict, 
+            weakness = weakness, 
+            status = status,
+            name = "Player",
+            battle_ref= battle_ref
         )
 
         if equipment == None:
@@ -181,12 +191,8 @@ class Battle_Gameplay:
 
         self.enemies_list = []
         for enemy_data in enemies_data:
-            item = Battler(
-                name = enemy_data["Enemy Name"],
-                statsdict = enemy_data["Enemy Stats"],
-                weakness = enemy_data["Enemy Weakness"],
-                battle_ref = self
-
+            item = enemy_data(
+                battle_ref= self
             )
             self.enemies_list.append(item)
         
@@ -337,12 +343,8 @@ class Battle_Gameplay:
 
     def enemy_turn(self, enemy_battler):
         # --Enemy Turn--
-        command.attack(
-            user_battler = enemy_battler,
-            target_battler = self.player_battler)
+        enemy_battler.self_behaviour()
         
-        # >replace above with enemy strategy function, eventually
-
 
 
 
