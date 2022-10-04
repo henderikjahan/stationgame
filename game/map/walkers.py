@@ -4,7 +4,7 @@ from direct.interval.IntervalGlobal import Func
 
 from .common import DIRS, OPPO
 from game.tools import roundvec
-from game.map.map_screen import MapScreen
+from game.gui.map_screen import MapScreen
 
 
 class TileWalker:
