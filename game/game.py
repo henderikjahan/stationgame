@@ -5,9 +5,40 @@ from .tools import load_as_dict
 from game.items.items import ItemGui
 from game.map.construct import MeshMap
 from game.map.walkers import CameraWalker
+from game.battle import player_gl, enemies
+from game.battle import battle_gameplay as bgp
 
 
-class Game():
+class Player:
+    def __init__(self, map, camera):
+        self.walker = CameraWalker(map.tilemap, camera)
+        self.walker.root.reparent_to(render)
+        self.walker.set_pos(*map.start)
+        self.stat = player_gl
+
+        self.battle = None
+        self.counter = 0
+        base.task_mgr.add(self.update)
+
+    def update(self, task):
+        if base.sequencer.running:
+            return task.cont
+
+        if self.battle:
+            self.battle.battle_turn("attack")
+            self.battle =  None
+        else:
+            if self.counter > 10:
+                self.battle = bgp.Battle_Gameplay(
+                    player_gl = player_gl,
+                    enemies_data = enemies
+                )
+                self.counter = 0
+            if self.walker.movement():
+                self.counter += 1
+        return task.cont
+
+class Game:
     def __init__(self):
         self.map = MeshMap(
             load_as_dict("assets/bam/tiles.bam"),
@@ -30,9 +61,8 @@ class Game():
         camera = base.make_camera(buffer)
         camera.reparent_to(render)
 
-        self.player = CameraWalker(self.map.tilemap, camera)
-        self.player.root.reparent_to(render)
-        self.player.set_pos(*self.map.start)
+        self.player = Player(self.map, camera)
+
         render.ls()
 
         #base.gui = ItemGui()
