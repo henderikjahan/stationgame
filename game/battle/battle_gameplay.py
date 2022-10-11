@@ -132,23 +132,33 @@ class Battler:
             self.stat["Current AP"] -= cost
             return True
 
+    def self_behaviour(self):
+        pass
 
     # to-do in battler:
     #   status handling
     #   passive handling
     #   
 
+# <-- Enemy Battler class -->
+class Enemy_Battler(Battler):
+    def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None):
+        super().__init__(statsdict, weakness, status, name, battle_ref)
+
+    def player(self):
+        return self.battle_ref.player_battler
 
 # <-- Player battler class -->
 class Player_Battler(Battler):
     def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, battle_ref = None):
 
-        Battler.__init__(self, 
-        statsdict = statsdict, 
-        weakness = weakness, 
-        status = status,
-        name = "Player",
-        battle_ref= battle_ref
+        Battler.__init__(
+            self, 
+            statsdict = statsdict, 
+            weakness = weakness, 
+            status = status,
+            name = "Player",
+            battle_ref= battle_ref
         )
 
         if equipment == None:
@@ -179,23 +189,43 @@ class Battle_Gameplay:
             #,psi = player_gl.psi
         )
 
+        # enemy objects setup
         self.enemies_list = []
-        for enemy_data in enemies_data:
-            item = Battler(
-                name = enemy_data["Enemy Name"],
-                statsdict = enemy_data["Enemy Stats"],
-                weakness = enemy_data["Enemy Weakness"],
-                battle_ref = self
 
+        for enemy_data in enemies_data:
+            item = enemy_data(
+                battle_ref= self
             )
             self.enemies_list.append(item)
         
+        # !busy, 11-10-2022
+        #rename_enemy_duplicates()
+
         self.turn = 1
         self.exit_battle = False
         self.results = "undetermined"
 
         # Starts battle
         self.battle_loop()
+
+
+    def rename_enemy_duplicates(self):
+        
+        seen_names = []
+        dupes = []
+
+        for enemy in self.enemies_list:
+            name = enemy.name
+            if name in dupes:
+                pass
+            elif name in seen_names:
+                pass
+            else:
+                seen_names.append(name)
+
+
+
+
 
     def battle_loop(self):
 
@@ -312,7 +342,7 @@ class Battle_Gameplay:
             case ["attack" | "a", *target]: 
                 #target is a single string in a list
                 # note to self, please make this more neat
-                command.targeting_tool(
+                self.targeting_tool(
                     user_battler= self.player_battler,
                     enemies_list= self.enemies_list,
                     command_function= command.attack,
@@ -337,12 +367,48 @@ class Battle_Gameplay:
 
     def enemy_turn(self, enemy_battler):
         # --Enemy Turn--
-        command.attack(
-            user_battler = enemy_battler,
-            target_battler = self.player_battler)
+        enemy_battler.self_behaviour()
         
-        # >replace above with enemy strategy function, eventually
+
+    def targeting_tool(self, user_battler, enemies_list, command_function, target_input = None):
+        # targeting tool used by player battler, requires commands
+        target_exists, target_battler = self.check_target(
+            enemies_list = enemies_list,
+            target = target_input
+            )
+        if target_exists == False:
+            return
+        
+        command_function(user_battler, target_battler)
 
 
+    def check_target(self, enemies_list, target):
+        # returns true or false depending whether the target is legal
+        # and also returns a reference of the legal target
+        
+        # target is a list with a single string
+
+        if target == None or len(target) == 0:
+        # returns the first target, if target is an empty list
+            return True, enemies_list[0]
+        
+        # Creates 2 lists: full name and shortened name
+        full_l = []
+        short_l = []
+        for enemy in enemies_list:
+            full_l.append(enemy.name.lower())
+            short_l.append(
+                ''.join(char.lower() for char in enemy.name if char.isupper())
+            )
+
+        if target[0] in short_l:
+            nimdex = short_l.index(target[0])
+            return True, enemies_list[nimdex]
+        elif target[0] in full_l:
+            nimdex = full_l.index(target[0])
+            return True, enemies_list[nimdex]
+        else:
+            print("Target not found, check your input")
+            return False, None
 
 
