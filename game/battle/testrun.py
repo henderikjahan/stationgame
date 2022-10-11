@@ -11,6 +11,7 @@ player_gl = player_stat.playerstat()
 
 enemies = [
     enemy.Borger_Burger,
+    enemy.Borger_Burger,
     enemy.Magical_Mayonaise
 ]
     # enemies expects a list of enemy classes, which are NOT objects (yet)!

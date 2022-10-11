@@ -199,7 +199,7 @@ class Battle_Gameplay:
             self.enemies_list.append(item)
         
         # !busy, 11-10-2022
-        #rename_enemy_duplicates()
+        self.rename_enemy_duplicates()
 
         self.turn = 1
         self.exit_battle = False
@@ -210,7 +210,8 @@ class Battle_Gameplay:
 
 
     def rename_enemy_duplicates(self):
-        
+        # renames all duplicates in a list of enemy_objects
+        # !do note that the function may have wonky naming if applied multiple times
         seen_names = []
         dupes = []
 
@@ -219,12 +220,21 @@ class Battle_Gameplay:
             if name in dupes:
                 pass
             elif name in seen_names:
-                pass
+                dupes.append(name)
             else:
                 seen_names.append(name)
 
+        if len(dupes) > 0:
+            alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            dupes_dic = {}
+            for x in dupes:
+                dupes_dic[x] = -1
 
-
+            for enemy in self.enemies_list:
+                name = enemy.name
+                if name in dupes_dic:
+                    dupes_dic[name] = dupes_dic[name] + 1
+                    enemy.name = name + " " + alphabet[dupes_dic[name]]
 
 
     def battle_loop(self):
