@@ -1,3 +1,4 @@
+from game.tools import print
 
 def check_legality_target(target_battler, status_list = ["Felled"], check_for_illegality = True):
     # checks whether the target is legal based on status

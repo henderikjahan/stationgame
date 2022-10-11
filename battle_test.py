@@ -1,26 +1,27 @@
 # --imports Gameplay--
-import battle_gameplay as bgp
+from game.battle import battle_gameplay as bgp
 
 # --imports--
-import player_stat
-import enemy_list as enemy
+from game.battle import player_stat
+from game.battle import enemy_list as enemy
 
 # --setup player/enemy stat--
-player_gl = player_stat.playerstat()
+player_gl = player_stat.PlayerStat()
     # player_gl expects a "playerstat object"
 
 enemies = [
-    enemy.Borger_Burger,
-    enemy.Magical_Mayonaise
+    enemy.BorgerBurger,
+    enemy.MagicalMayonaise
 ]
     # enemies expects a list of enemy classes, which are NOT objects (yet)!
 
 
 # --starts battle--
-random_battle = bgp.Battle_Gameplay(
+random_battle = bgp.BattleGameplay(
     player_gl= player_gl,
-    enemies_data= enemies
-    )
+    enemies_data= enemies,
+    loop= True
+)
 
 
 
