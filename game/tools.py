@@ -1,6 +1,14 @@
+import builtins
 from panda3d.core import Vec2, Vec3
+from panda3d.core import CardMaker
 
 
+def print(string):
+    try:
+        base.print(string)
+    except NameError:
+        builtins.print(string)
+        
 def load_as_dict(filename):
     child_dict = {}
     models = loader.load_model(filename)
@@ -49,3 +57,20 @@ def tile_texture(nodepath, texture, x, y, tiles_per_row):
         w = h = 1/tiles_per_row
         nodepath.set_tex_scale(texture_stage, w, h)
         nodepath.set_tex_offset(texture_stage, x*w, 1-(y*w))
+
+def render_to_texture(root):
+    # Render to texture
+    cardmaker = CardMaker("card")
+    cardmaker.set_frame(-1,1,-1,1)
+    screen = base.render2d.attach_new_node(cardmaker.generate())
+    buffer = base.win.makeTextureBuffer("Buffer", 256, 256)
+    buffer.set_clear_color_active(True)
+    buffer.set_clear_color((0,0,0,1))
+    texture = buffer.get_texture()
+    texture.set_minfilter(0)
+    texture.set_magfilter(0)
+    screen.set_texture(texture, 1)
+    buffer.set_sort(-100)
+    camera = base.make_camera(buffer)
+    camera.reparent_to(root)
+    return camera

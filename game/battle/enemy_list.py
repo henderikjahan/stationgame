@@ -1,8 +1,8 @@
-from battle_gameplay import Enemy_Battler
-import command_list as command
+from .battle_gameplay import EnemyBattler
+from . import command_list as command
 
 
-class Borger_Burger(Enemy_Battler):
+class BorgerBurger(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
@@ -16,12 +16,12 @@ class Borger_Burger(Enemy_Battler):
             "Current AP": 0,
             "Turn AP": 1,
             "Max AP": 5
-            }
+        }
         weakness = []
         status = None
         name = "Borger Burger"
 
-        Enemy_Battler.__init__(
+        EnemyBattler.__init__(
             self,
             statsdict = statsdict,
             weakness = weakness,
@@ -41,7 +41,7 @@ class Borger_Burger(Enemy_Battler):
 
 
 
-class Magical_Mayonaise(Enemy_Battler):
+class MagicalMayonaise(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
@@ -55,12 +55,12 @@ class Magical_Mayonaise(Enemy_Battler):
             "Current AP": 0,
             "Turn AP": 1,
             "Max AP": 5
-            }
+        }
         weakness = []
         status = None
         name = "Magical Mayonaise"
 
-        Enemy_Battler.__init__(
+        EnemyBattler.__init__(
             self,
             statsdict = statsdict,
             weakness = weakness,
@@ -83,7 +83,7 @@ class Magical_Mayonaise(Enemy_Battler):
 
 
 # <----->
-class Placeholder(Enemy_Battler):
+class Placeholder(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
@@ -97,12 +97,12 @@ class Placeholder(Enemy_Battler):
             "Current AP": 0,
             "Turn AP": 0,
             "Max AP": 5
-            }
+        }
         weakness = []
         status = None
         name = "Placeholder"
 
-        Enemy_Battler.__init__(
+        EnemyBattler.__init__(
             self,
             statsdict = statsdict,
             weakness = weakness,

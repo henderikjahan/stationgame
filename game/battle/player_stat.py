@@ -4,7 +4,7 @@
 # *list updated in 12-9-2022
 
 
-class playerstat:
+class PlayerStat:
     def __init__(self, playerstatdict = {}, player_equipment = {}, psi = {}):
 
         # !When having thoughts about certain stats, please share!

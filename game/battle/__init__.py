@@ -1,4 +1,4 @@
 # --imports--
-from battle_gameplay import Battle_Gameplay
-import player_stat
-import enemy_list as enemy
+from .battle_gameplay import BattleGameplay
+from .player_stat import PlayerStat
+from . import enemy_list as enemy
