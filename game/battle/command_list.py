@@ -1,46 +1,4 @@
 
-def check_target(enemies_list, target):
-    # returns true or false depending whether the target is legal
-    # and also returns a reference of the legal target
-    
-    # target is a list with a single string
-
-    if target == None or len(target) == 0:
-    # returns the first target, if target is an empty list
-        return True, enemies_list[0]
-    
-    # Creates 2 lists: full name and shortened name
-    full_l = []
-    short_l = []
-    for enemy in enemies_list:
-        full_l.append(enemy.name.lower())
-        short_l.append(
-            ''.join(char.lower() for char in enemy.name if char.isupper())
-        )
-
-    if target[0] in short_l:
-        nimdex = short_l.index(target[0])
-        return True, enemies_list[nimdex]
-    elif target[0] in full_l:
-        nimdex = full_l.index(target[0])
-        return True, enemies_list[nimdex]
-    else:
-        print("Target not found, check your input")
-        return False, None
-
-
-def targeting_tool(user_battler, enemies_list, command_function, target_input = None):
-    # targeting tool used by player battler, requires commands
-    target_exists, target_battler = check_target(
-        enemies_list = enemies_list,
-        target = target_input
-        )
-    if target_exists == False:
-        return
-    
-    command_function(user_battler, target_battler)
-
-
 def check_legality_target(target_battler, status_list = ["Felled"], check_for_illegality = True):
     # checks whether the target is legal based on status
     # checks for Felled on default
