@@ -1,7 +1,9 @@
 import math
-import command_list as command
-import status_list as status
+from game.battle import command_list as command
+from game.battle import status_list as status
+from game.tools import print
 
+    
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
 class Battler:
@@ -36,7 +38,7 @@ class Battler:
             "Current AP": 0,
             "Turn AP": 1,
             "Max AP": 5
-            }
+        }
 
         for entry in statsdict:
             self.stat[entry] = statsdict[entry]
@@ -103,7 +105,7 @@ class Battler:
         str_selfname = str(self.name)
         print(f"{str_selfname} has been felled!")
 
-        self.status["Felled"] = status.felled(
+        self.status["Felled"] = status.Felled(
             name= "Felled",
             turn= None,
             strength= 1,
@@ -141,7 +143,7 @@ class Battler:
     #   
 
 # <-- Enemy Battler class -->
-class Enemy_Battler(Battler):
+class EnemyBattler(Battler):
     def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None):
         super().__init__(statsdict, weakness, status, name, battle_ref)
 
@@ -149,7 +151,7 @@ class Enemy_Battler(Battler):
         return self.battle_ref.player_battler
 
 # <-- Player battler class -->
-class Player_Battler(Battler):
+class PlayerBattler(Battler):
     def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, battle_ref = None):
 
         Battler.__init__(
@@ -178,11 +180,11 @@ class Player_Battler(Battler):
 
 
 # <-- battle class -->
-class Battle_Gameplay:
-    def __init__(self, player_gl, enemies_data):
+class BattleGameplay:
+    def __init__(self, player_gl, enemies_data, loop=False):
     
         # --Variable Setup--
-        self.player_battler = Player_Battler(
+        self.player_battler = PlayerBattler(
             statsdict = player_gl.stat,
             equipment = player_gl.equipment,
             battle_ref = self
@@ -206,7 +208,24 @@ class Battle_Gameplay:
         self.results = "undetermined"
 
         # Starts battle
-        self.battle_loop()
+        self.start_of_battle()
+        if loop:
+            self.battle_loop()
+
+
+    def rename_enemy_duplicates(self):
+        seen_names = []
+        dupes = []
+
+        for enemy in self.enemies_list:
+            name = enemy.name
+            if name in dupes:
+                pass
+            elif name in seen_names:
+                pass
+            else:
+                seen_names.append(name)
+
 
 
     def rename_enemy_duplicates(self):
@@ -239,8 +258,6 @@ class Battle_Gameplay:
 
     def battle_loop(self):
 
-        self.start_of_battle()
-        
         while True:
 
             self.battle_turn()
@@ -284,7 +301,7 @@ class Battle_Gameplay:
         for enemy_battler in self.enemies_list:
             enemy_battler.start_of_battle()
 
-    def battle_turn(self):
+    def battle_turn(self, takeninput=None):
         # --Start of Turn--
         str_turn = str(self.turn)
         print(f"\n\n<--Turn {str_turn} -->")
@@ -294,7 +311,7 @@ class Battle_Gameplay:
         self.player_battler.start_of_turn()
         pturn_active = True
         while pturn_active:
-            pturn_active = self.player_turn()
+            pturn_active = self.player_turn(takeninput)
 
             if self.exit_battle == True:
                 # escape from battle
@@ -315,7 +332,7 @@ class Battle_Gameplay:
         self.turn += 1
 
 
-    def player_turn(self):
+    def player_turn(self, takeninput=None):
 
         # <Status Check>
         print("")
@@ -332,16 +349,17 @@ class Battle_Gameplay:
         str_plAP = str(self.player_battler.stat["Current AP"])
         print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
         print(f"Player AP: {str_plAP}")
-
-        print("\n--Choose command--")
-        print("Attack (1*)| Psi | TurnPass | Exit")
+        if not takeninput:
+            print("\n--Choose command--")
+            print("Attack (1*)| Psi | TurnPass | Exit")
 
         # creating a reference for the enemies
         short_name_list = []
         for enemy in self.enemies_list:
             short_name_list.append(''.join(letter for letter in enemy.name if letter.isupper()))
 
-        takeninput = input(">Input: ").lower()
+        if not takeninput:
+            takeninput = input(">Input: ").lower()
         
         match takeninput.split(sep= ' ', maxsplit= 1):
             

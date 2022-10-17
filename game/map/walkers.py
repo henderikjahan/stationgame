@@ -4,7 +4,7 @@ from direct.interval.IntervalGlobal import Func
 
 from .common import DIRS, OPPO
 from game.tools import roundvec
-from game.map.map_screen import MapScreen
+from game.gui.map_screen import MapScreen
 
 
 class TileWalker:
@@ -47,7 +47,7 @@ class CameraWalker(TileWalker):
         camera.set_pos(0,0,1)
         camera.node().get_lens().set_near(0.1)
         camera.node().get_lens().set_fov(90)
-        base.task_mgr.add(self.update)
+
         self.light = self.root.attach_new_node(PointLight("walker"))
         self.light.set_z(1)
         self.light.node().set_attenuation(Vec3(0.05,0.05,0.05))
@@ -73,9 +73,3 @@ class CameraWalker(TileWalker):
         else:
             return False
         return True
-
-    def update(self, task):
-        if base.sequencer.running:
-            return task.cont
-        self.movement()
-        return task.cont

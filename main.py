@@ -52,7 +52,16 @@ class Sequencer():
         self.parallel.start()
         self.running = True
 
+        
+class Printer:
+    def __init__(self):
+        self.buffer = []
+    
+    def print(self, string):
+        print("printer:", string)
+        self.buffer.append(string)
 
+        
 loadPrcFile(Filename.expand_from("$MAIN_DIR/settings.prc"))
 base = ShowBase()
 base.win.set_clear_color((0.1,0.1,0.1,1))
@@ -65,5 +74,6 @@ base.cardmaker.set_frame(0,0,-1,1)
 base.linemaker = LineSegs("line")
 base.linemaker.set_thickness(1)
 base.render.set_antialias(AntialiasAttrib.MNone)
+base.printer = Printer(); base.print = base.printer.print
 base.game = Game()
 base.run()

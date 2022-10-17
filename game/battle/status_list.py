@@ -1,6 +1,6 @@
 
 
-class status:
+class Status:
     def __init__(self, name= "Unnamed", turn= None, strength= 0, afflicted_object = None):
         
         if name == None:
@@ -36,12 +36,12 @@ class status:
             return 0
 
 
-class felled(status):
+class Felled(Status):
     def immediate_effect(self):
         self.afflicted.stat["Current AP"] = 0
 
 
-class poison(status):
+class Poison(Status):
     def turn_effect(self):
         self.user_class.stat["Current HP"] -= self.strength
 
@@ -49,6 +49,6 @@ class poison(status):
 
 # status example
 user_status_list = {
-    "Felled": "Felled_Status object",
-    "Poison": "Poison_Status object"
+    "Felled": "FelledStatus object",
+    "Poison": "PoisonStatus object"
 }
