@@ -93,6 +93,8 @@ class BattleGui:
             if not self.menu.alive:
                 return True
 
+=======
+>>>>>>> refs/remotes/origin/battle_trigger
 
 class Player:
     def __init__(self, map, camera):
@@ -112,6 +114,7 @@ class Player:
             return task.cont
 
         if self.battle:
+<<<<<<< HEAD
             if self.battle.update():
                 self.battle = None
         else:
@@ -120,6 +123,19 @@ class Player:
                     enemy.BorgerBurger,
                     enemy.MagicalMayonaise
                 ])
+=======
+            self.battle.player_turn("attack")
+            self.battle =  None
+        else:
+            if self.counter > 10:
+                self.battle = BattleGameplay(
+                    player_gl = self.stat,
+                    enemies_data = [
+                        enemy.BorgerBurger,
+                        enemy.MagicalMayonaise
+                    ]
+                )
+>>>>>>> refs/remotes/origin/battle_trigger
                 self.counter = 0
             if self.walker.movement():
                 self.counter += 1
