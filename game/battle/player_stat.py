@@ -32,24 +32,26 @@ class PlayerStat:
             "Psi Defense": 10,	# Damage reduction of receiving Psi attacks: damageReceived = 100/(100+defense)
 
             "Dodge": 10, # Avoid rage and tactical, but not psi.
-            
          
+            # Elemental types - affinity is resistance and a bonus to damage 
             "Heat Affinity": 10,
             "Elec Affinity": 10,
             "Data Affinity": 10,
             
-            "Hacking": 10,
-            "Tinkering": 10,
-            "Light radius": 10,
-
-            "Charisma": 1, # in case we have stores, make items cheaper to buy "bartering"
-            "Stealth": 1, # reduced battle chance, when sneaking
-            "Robotica": 1 # handle droid companions
-
-            "Stability": 10,
-            
             "Turn AP": 3,	# Turn Action points, determines the amount of AP the battlers can gain per turn at start
             "Max AP": 5,    # Maximum Action points, which can be banked
+            
+            # Out of combat stats:
+            "Hacking": 10, # Basically lockpicking
+            "Tinkering": 10, # Making / crafting stuff
+            "Light radius": 10, # For discovering mini map
+
+            "Charisma": 1, # in case we have stores, make items cheaper to buy "bartering"
+            "Stealth": 1, # reduced battle chance, when sneaking. Can increase run chance. Base run chance scaled by enemy hp.
+            "Robotica": 1 # handle droid companions (maybe scale damage or allow new pets to be used)
+
+            "Stability": 10, # Innate stability scaling - so that items can increase or decrease stability
+            
         }
         self.equipment = {}
 
