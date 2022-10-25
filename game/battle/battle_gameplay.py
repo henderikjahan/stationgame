@@ -36,6 +36,7 @@ class Battler:
             "Psi Defense": 0,
 
             "Current AP": 0,
+            "Temporary AP": 0,
             "Turn AP": 1,
             "Max AP": 5
         }
@@ -63,6 +64,13 @@ class Battler:
         if self.stat["Current AP"] > self.stat["Max AP"]:
             self.stat["Current AP"] = self.stat["Max AP"]
 
+    def gain_temporary_AP(self, AP= 1):
+        mst = self.stat
+        if AP < (mst["Max AP"] - mst["Current AP"]):
+            AP = (mst["Max AP"] - mst["Current AP"])
+
+        self.stat["Temporary AP"] += AP
+
     def start_of_turn(self):
         # at start of turn passives/statuses
         
@@ -75,13 +83,22 @@ class Battler:
         # at end of turn passives
 
 
-    def deal_damage_Base(self, command_power):
-        # deal damage with base attack in mind
+    def deal_damage_Base(self, command_power, weakness_hit = False):
+        # use etc here
+        # deals damage with base attack in mind
+
+        if False:   # !depecrated design
+            if weakness_hit == True:
+                effective_multiplier = 1.2
+            else:
+                effective_multiplier = 1.0
+        
         raw_damage = self.stat["Base Attack"] * command_power
+
 
         return raw_damage
     
-    def take_damage(self, raw_damage):
+    def take_damage(self, raw_damage, extra_info = None):
         # Take damage based on physical defense
         end_damagepre = raw_damage * 100 / (100 + self.stat["Physical Defense"])
         end_damage = math.ceil(end_damagepre)
@@ -101,6 +118,17 @@ class Battler:
 
         return end_damage   # Returns resulting damage
 
+    def apply_break_status(self):
+        str_selfname = str(self.name)
+        print(f"{str_selfname} has been breaked!")
+
+        self.status["Break"] = status.Break(
+            name= "Break",
+            turn= None,
+            strength= 1,
+            afflicted_object= self
+        )
+
     def apply_felled_status(self):
         str_selfname = str(self.name)
         print(f"{str_selfname} has been felled!")
@@ -114,7 +142,6 @@ class Battler:
 
         if self.battle_ref != None:
             self.battle_ref.check_victory()
-
 
     def check_ap_cost(self, cost = 1):
         # mainly usefull for enemies for checking what's the best option
@@ -140,7 +167,6 @@ class Battler:
     # to-do in battler:
     #   status handling
     #   passive handling
-    #   
 
 # <-- Enemy Battler class -->
 class EnemyBattler(Battler):
@@ -200,7 +226,6 @@ class BattleGameplay:
             )
             self.enemies_list.append(item)
         
-        # !busy, 11-10-2022
         self.rename_enemy_duplicates()
 
         self.turn = 1
@@ -225,7 +250,6 @@ class BattleGameplay:
                 pass
             else:
                 seen_names.append(name)
-
 
 
     def rename_enemy_duplicates(self):
@@ -338,7 +362,6 @@ class BattleGameplay:
         print("")
         print_output = ""
         for enemy_battler in self.enemies_list:
-            # ! change this into f string
             str_enemy = str(enemy_battler.name)
             str_eHP = str(enemy_battler.stat["Current HP"])
             print_output += f"{str_enemy} HP: {str_eHP}   "
@@ -440,3 +463,5 @@ class BattleGameplay:
             return False, None
 
 
+    def get_player_psi(self):
+        pass

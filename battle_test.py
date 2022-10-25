@@ -6,10 +6,15 @@ from game.battle import player_stat
 from game.battle import enemy_list as enemy
 
 # --setup player/enemy stat--
-player_gl = player_stat.PlayerStat()
+player_gl = player_stat.PlayerStat(
+    psi= {}
+    )
     # player_gl expects a "playerstat object"
 
+# ! 24-10, was bezig met psi implementeren in het spel
+
 enemies = [
+    enemy.BorgerBurger,
     enemy.BorgerBurger,
     enemy.MagicalMayonaise
 ]

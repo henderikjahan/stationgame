@@ -1,7 +1,7 @@
 
 
 class Status:
-    def __init__(self, name= "Unnamed", turn= None, strength= 0, afflicted_object = None):
+    def __init__(self, name= None, turn= None, strength= 0, afflicted_object = None):
         
         if name == None:
             name = "Unnamed"
@@ -15,16 +15,22 @@ class Status:
 
         self.immediate_effect()
 
+    def clear_self(self):
+        self.afflicted.status.pop(self.name)
+
     def turn_reduction(self, minus_turns= 1, pop_status= True):
         if isinstance(self.turn, int):
             self.turn -= minus_turns
             if pop_status == True and self.turn <= 0:
-                self.afflicted.status.pop(self.name)
+                self.clear_self()
 
     def immediate_effect(self):
         pass
 
-    def turn_effect(self):
+    def start_turn_effect(self):
+        pass
+
+    def end_turn_effect(self):
         pass
 
     def buff(self, stat_name):
@@ -36,13 +42,19 @@ class Status:
             return 0
 
 
+
+class Break(Status):
+    def start_turn_effect(self):
+        self.clear_self()
+
+
 class Felled(Status):
     def immediate_effect(self):
         self.afflicted.stat["Current AP"] = 0
 
 
 class Poison(Status):
-    def turn_effect(self):
+    def end_turn_effect(self):
         self.user_class.stat["Current HP"] -= self.strength
 
 
