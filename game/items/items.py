@@ -17,12 +17,10 @@ class ItemGui:
             MenuItem("Coin", "A very beautiful coin"),
         ], y=0.8)
         self.textmenu.root.reparent_to(self.root)
-        base.task_mgr.add(self.update)
-
+        
     def update(self, task):
-        context = base.device_listener.read_context("menu")
-        if context["up"]:
-            self.textmenu.move_selection(-1)
-        if context["down"]:
-            self.textmenu.move_selection(1)
-        return task.cont
+        self.textmenu.interact()
+        if self.alive:
+            return task.cont
+        else:
+            return task.finish

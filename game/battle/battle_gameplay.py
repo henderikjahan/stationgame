@@ -361,7 +361,8 @@ class BattleGameplay:
             case _:
                 print("Input not recognized")
         
-        return True
+        if not takeninput:
+            return True
 
 
     def enemy_turn(self, enemy_battler):
