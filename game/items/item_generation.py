@@ -3,10 +3,10 @@ from typing import Union
 
 def generateItem(
     itemLevel: int,
-    baseType: Union[str, False] = False,
-    inStability: Union[int, False] = False
+    inStability: Union[int, bool] = False,
 ):
     # select is unique item?
+
     # select baseType
     # select is special mod template? Maybe give special items generated red background
     # choose mod amounts
@@ -15,4 +15,4 @@ def generateItem(
     print("generating item")
 
 
-generateItem()
+generateItem(itemLevel=50, inStability=15)
