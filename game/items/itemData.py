@@ -1,4 +1,5 @@
-from typing import Union
+# TODO move data and functions to separate file - gotta figure out relative importing
+
 import random
 
 weaponBases = {
@@ -11,6 +12,7 @@ weaponBases = {
         "attackCategory": "psi",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "psi"],
     },
     "tier2PSIWeapon": {
         "baseName": "tier2PSIWeapon",
@@ -21,6 +23,7 @@ weaponBases = {
         "attackCategory": "psi",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "psi"],
     },
     "tier3PSIWeapon": {
         "baseName": "tier3PSIWeapon",
@@ -31,6 +34,7 @@ weaponBases = {
         "attackCategory": "psi",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "psi"],
     },
 
     "tier1AssaultWeapon": {
@@ -42,6 +46,7 @@ weaponBases = {
         "attackCategory": "assault",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "assault"],
     },
     "tier2AssaultWeapon": {
         "baseName": "tier2AssaultWeapon",
@@ -52,6 +57,7 @@ weaponBases = {
         "attackCategory": "assault",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "assault"],
     },
     "tier3AssaultWeapon": {
         "baseName": "tier3AssaultWeapon",
@@ -62,6 +68,7 @@ weaponBases = {
         "attackCategory": "assault",
         "implicitMods": [],
         "images": [],
+        "baseTags": ["weapon", "assault"],
     },
 
     "tier1InsanityWeapon": {
@@ -75,6 +82,7 @@ weaponBases = {
         "images": [],
         "modMultiplier": 1.2,
         "insanityMultiplier": 1.3,
+        "baseTags": ["weapon", "tactics"],
     },
     "tier2InsanityWeapon": {
         "baseName": "tier2InsanityWeapon",
@@ -87,6 +95,7 @@ weaponBases = {
         "images": [],
         "modMultiplier": 1.4,
         "insanityMultiplier": 1.4,
+        "baseTags": ["weapon", "assault"],
     },
     "tier3InsanityWeapon": {
         "baseName": "tier3InsanityWeapon",
@@ -99,6 +108,7 @@ weaponBases = {
         "images": [],
         "modMultiplier": 1.5,
         "insanityMultiplier": 1.5,
+        "baseTags": ["weapon", "psi"],
     },
 }
 
@@ -111,59 +121,127 @@ bootsBases = {
         "names": ["Leather Boots"],
         "implicitMods": [],
         "images": [],
+        "baseTags": ["armor", "boots"],
     },
 }
 
 baseTypes = weaponBases | bootsBases
 
-# print(baseTypes)
-
+# baseRange is allowed mod values around the range beween midPoint and highPoint
+# by default, highpoint is the same as midPoint
 itemMods = {
     "flatMaxHP": {
         "description": "$$ to maximum HP",
-        "modWeight": 30,
+        "modWeight": 20,
         "minimumItemLvl": 0,
         "midPoint": 10,
-        "midPointItemLevelScaling": 3,
+        "highPointItemLevelScaling": 3,
         "baseRange": 5,
-        "baseRangeInstablityScaling": 0.2
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
     },
     "increasedMaxHP": {
         "description": "$$% increased maximum HP",
         "modWeight": 10,
         "minimumItemLvl": 10,
         "midPoint": 3,
-        "midPointItemLevelScaling": 0.2,
+        "highPointItemLevelScaling": 0.2,
         "baseRange": 2,
-        "baseRangeInstablityScaling": 0.2
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
     },
     "flatRegenHP": {
         "description": "$$ HP restored per step",
         "modWeight": 10,
         "minimumItemLvl": 0,
         "midPoint": 2,
-        "midPointItemLevelScaling": 0.4,
+        "highPointItemLevelScaling": 0.4,
         "baseRange": 1,
-        "baseRangeInstablityScaling": 0.2
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
     },
     "increasedHPRegen": {
         "description": "$$% increased HP restored per step",
         "modWeight": 5,
         "minimumItemLvl": 20,
         "midPoint": 15,
-        "midPointItemLevelScaling": 1,
+        "highPointItemLevelScaling": 1,
         "baseRange": 10,
-        "baseRangeInstablityScaling": 1
+        "baseRangeInstablityScaling": 1,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
     },
     "increasedGenericDamage": {
         "description": "Deal $$% increased damage",
         "modWeight": 5,
         "minimumItemLvl": 0,
         "midPoint": 5,
-        "midPointItemLevelScaling": 1,
+        "highPointItemLevelScaling": 1,
         "baseRange": 3,
-        "baseRangeInstablityScaling": 0.4
+        "baseRangeInstablityScaling": 0.4,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {}
     },
+    "APRegen": {
+        "description": "Restore $$ more Action Points each turn in combat",
+        "modWeight": 1,
+        "minimumItemLvl": 10,
+        "midPoint": 1,
+        "highPointItemLevelScaling": 0.03,
+        "baseRange": 0.01,
+        "baseRangeInstablityScaling": 0.02,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {},
+        "maximumValue": 2
+    },
+    "flatToAP": {
+        "description": "+$$ maximum Action Points in combat",
+        "modWeight": 2,
+        "minimumItemLvl": 10,
+        "midPoint": 1,
+        "highPointItemLevelScaling": 0.05,
+        "baseRange": 0.01,
+        "baseRangeInstablityScaling": 0.02,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {},
+        "maximumValue": 2
+    },
+    "flatToAssault": {
+        "description": "+$$ to Assault Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 2, "psi": 0.5, "tactics": 0.5},
+        "baseTagWeigthModifiers": {"assault": 2, "psi": 0.2, "tactics": 0.2},
+    },
+    "flatToPSI": {
+        "description": "+$$ to PSI Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 0.5, "psi": 2, "tactics": 0.5},
+        "baseTagWeigthModifiers": {"assault": 0.2, "psi": 2, "tactics": 0.2},
+    },
+    "flatToTactics": {
+        "description": "+$$ to Tactics Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 0.5, "psi": 0.5, "tactics": 2},
+        "baseTagWeigthModifiers": {"assault": 0.2, "psi": 0.2, "tactics": 2},
+    }
 }
 
 
@@ -187,6 +265,7 @@ def selectBaseType(
 def selectMods(
     itemLevel: int,
     inStability: int,
+    baseType,
     modAmount: int
 ):
     eligibleMods = {k: v for (k, v) in itemMods.items() if (
@@ -194,17 +273,33 @@ def selectMods(
         and ("minimumInstabilityLvl" not in v or v["minimumInstabilityLvl"] <= inStability)
     )}
     orderedEligibleModNames = list(eligibleMods)
-    orderedEligibleModWeights = [itemMods[x]["modWeight"]
-                                 for x in orderedEligibleModNames]
-    # selectedBaseType = random.choices(
-    #     orderedEligibleModNames, weights=orderedEligibleModWeights, k=1)[0]
+    orderedEligibleModWeights = []
 
-    # Select mod from eligiblemodNames using choices() in while loop. Then remove the mods
-    # from eligible mod name and weight lists. Add to selectedmods and continue until amount of selected mods is reached
+    baseTags = baseType["baseTags"]
+    for modName in orderedEligibleModNames:
+        itemMod = itemMods[modName]
+        modWeight = itemMod["modWeight"]
+
+        if "baseTagWeigthModifiers" in itemMod:
+            for baseTag in baseTags:
+                if baseTag in itemMod["baseTagWeigthModifiers"]:
+                    amountToModifyTag = itemMod["baseTagWeigthModifiers"][baseTag]
+                    modWeight = modWeight * amountToModifyTag
+        orderedEligibleModWeights.append(modWeight)
 
     selectedMods = []
 
-    # prune zero and below zero mod rolls from list.
+    while (len(selectedMods) < modAmount):
+        # check if no mods are left over, if so, exit while loop
+        if (max(orderedEligibleModWeights) == 0):
+            break
+
+        # select a mod, append it and set its weight to zero
+        selectedMod = random.choices(
+            orderedEligibleModNames, weights=orderedEligibleModWeights, k=1)[0]
+        selectedMods.append(selectedMod)
+        orderedEligibleModWeights[orderedEligibleModNames.index(
+            selectedMod)] = 0
 
     return selectedMods
 
@@ -217,24 +312,23 @@ def decideModAmount(itemLevel):
 
 def generateItem(
     itemLevel: int,
-    inStability: Union[int, bool] = False,
+    inStability: int = 0,
 ):
     # select is unique item?
+    # select special mod template? Maybe give special items generated red background
 
-    # select baseType
-
-    baseType = selectBaseType(itemLevel, inStability if inStability else 0)
+    baseType = selectBaseType(itemLevel, inStability)
     itemName = random.choice(
         baseType["names"]) if "names" in baseType else "Item"
 
     modAmount = decideModAmount(itemLevel)
-    print(modAmount)
 
-    # select is special mod template? Maybe give special items generated red background
+    selectedMods = selectMods(itemLevel, inStability, baseType, modAmount)
 
-    # choose mods
-    # choose mod roll
-    print("generating item")
+    print(itemName)
+    print(selectedMods)
+
+    # choose mod roll (probably inside selectMods function and rename it)
 
 
 generateItem(itemLevel=5, inStability=15)
