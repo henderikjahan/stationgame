@@ -262,7 +262,15 @@ def selectBaseType(
     return baseTypes[selectedBaseType]
 
 
-def selectMods(
+def rollMod(
+    itemLevel: int,
+    inStability: int,
+    baseType,
+):
+    return "modValue"
+
+
+def generateMods(
     itemLevel: int,
     inStability: int,
     baseType,
@@ -301,7 +309,13 @@ def selectMods(
         orderedEligibleModWeights[orderedEligibleModNames.index(
             selectedMod)] = 0
 
-    return selectedMods
+    # for each selected mod, decide mod roll
+    rolledMods = []
+    for modName in selectedMods:
+        rolledMod = rollMod(itemLevel, inStability, baseType)
+        rolledMods.append(rolledMod)
+
+    return rolledMods
 
 
 def decideModAmount(itemLevel):
@@ -323,12 +337,12 @@ def generateItem(
 
     modAmount = decideModAmount(itemLevel)
 
-    selectedMods = selectMods(itemLevel, inStability, baseType, modAmount)
+    itemMods = generateMods(itemLevel, inStability, baseType, modAmount)
 
     print(itemName)
-    print(selectedMods)
+    print(itemMods)
 
-    # choose mod roll (probably inside selectMods function and rename it)
+    # generate mod text and data to pass. Needs specifics of how to share data
 
 
 generateItem(itemLevel=5, inStability=15)
