@@ -354,11 +354,11 @@ def generateItem(
 
     modAmount = decideModAmount(itemLevel)
 
-    itemMods = generateMods(baseType, modAmount)
+    selectedItemMods = generateMods(baseType, modAmount)
 
     # print(itemName)
     # print(itemMods)
-    return {"itemName": itemName, "itemMods": itemMods}
+    return {"itemName": itemName, "itemMods": selectedItemMods}
     # returned itemMods should be associated with player mods file
 
 
