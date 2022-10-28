@@ -1,6 +1,8 @@
 # TODO move data and functions to separate file - gotta figure out relative importing
+# TODO deal with negative mod values - need special descriptions for those
 
 import random
+from math import floor
 
 weaponBases = {
     "tier1PSIWeapon": {
@@ -81,7 +83,7 @@ weaponBases = {
         "implicitMods": [],
         "images": [],
         "modMultiplier": 1.2,
-        "insanityMultiplier": 1.3,
+        "instabilityMultiplier": 1.3,
         "baseTags": ["weapon", "tactics"],
     },
     "tier2InsanityWeapon": {
@@ -94,7 +96,7 @@ weaponBases = {
         "implicitMods": [],
         "images": [],
         "modMultiplier": 1.4,
-        "insanityMultiplier": 1.4,
+        "instabilityMultiplier": 1.4,
         "baseTags": ["weapon", "assault"],
     },
     "tier3InsanityWeapon": {
@@ -107,7 +109,7 @@ weaponBases = {
         "implicitMods": [],
         "images": [],
         "modMultiplier": 1.5,
-        "insanityMultiplier": 1.5,
+        "instabilityMultiplier": 1.5,
         "baseTags": ["weapon", "psi"],
     },
 }
@@ -244,6 +246,8 @@ itemMods = {
     }
 }
 
+# TODO turn these loose functions into one big function/class
+
 
 def selectBaseType(
     itemLevel: int,
@@ -263,11 +267,32 @@ def selectBaseType(
 
 
 def rollMod(
+    mod: any,
     itemLevel: int,
-    inStability: int,
+    instability: int,
     baseType,
 ):
-    return "modValue"
+    if "instabilityMultiplier" in baseType:
+        instability = instability * baseType["instabilityMultiplier"]
+
+    range = mod["baseRange"] + \
+        (mod["baseRangeInstablityScaling"] * instability)
+    lowpoint = mod["midPoint"] - range
+    highpoint = mod["midPoint"] + range + \
+        (mod["highPointItemLevelScaling"] * itemLevel)
+
+    modRoll = floor(random.uniform(lowpoint, highpoint))
+    for magnitudeModifierTag in mod["baseTagMagnitudeModifiers"]:
+        if magnitudeModifierTag in baseType["baseTags"]:
+            modRoll = modRoll * \
+                mod["baseTagMagnitudeModifiers"][magnitudeModifierTag]
+
+    if "modMultiplier" in baseType:
+        modRoll = modRoll * baseType["modMultiplier"]
+
+    modText = mod["description"].replace("$$", str(int(modRoll)))
+
+    return modText
 
 
 def generateMods(
@@ -312,7 +337,8 @@ def generateMods(
     # for each selected mod, decide mod roll
     rolledMods = []
     for modName in selectedMods:
-        rolledMod = rollMod(itemLevel, inStability, baseType)
+        rolledMod = rollMod(itemMods[modName],
+                            itemLevel, inStability, baseType)
         rolledMods.append(rolledMod)
 
     return rolledMods
@@ -325,7 +351,7 @@ def decideModAmount(itemLevel):
 
 
 def generateItem(
-    itemLevel: int,
+    itemLevel: int = 0,
     inStability: int = 0,
 ):
     # select is unique item?
@@ -343,6 +369,7 @@ def generateItem(
     print(itemMods)
 
     # generate mod text and data to pass. Needs specifics of how to share data
+    # {itemName: "", "itemText": "", itemMods: {}}
 
 
-generateItem(itemLevel=5, inStability=15)
+generateItem(itemLevel=5, inStability=25)
