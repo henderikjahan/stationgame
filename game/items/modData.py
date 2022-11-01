@@ -1,0 +1,116 @@
+# baseRange is allowed mod values around the range beween midPoint and highPoint
+# by default, highpoint is the same as midPoint
+itemMods = {
+    "flatMaxHP": {
+        "description": "$$ to maximum HP",
+        "modWeight": 20,
+        "minimumItemLvl": 0,
+        "midPoint": 10,
+        "highPointItemLevelScaling": 3,
+        "baseRange": 5,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
+    },
+    "increasedMaxHP": {
+        "description": "$$% increased maximum HP",
+        "modWeight": 10,
+        "minimumItemLvl": 10,
+        "midPoint": 3,
+        "highPointItemLevelScaling": 0.2,
+        "baseRange": 2,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
+    },
+    "flatRegenHP": {
+        "description": "$$ HP restored per step",
+        "modWeight": 10,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.4,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
+    },
+    "increasedHPRegen": {
+        "description": "$$% increased HP restored per step",
+        "modWeight": 5,
+        "minimumItemLvl": 20,
+        "midPoint": 15,
+        "highPointItemLevelScaling": 1,
+        "baseRange": 10,
+        "baseRangeInstablityScaling": 1,
+        "baseTagMagnitudeModifiers": {},
+        "baseTagWeigthModifiers": {"weapon": 0}
+    },
+    "increasedGenericDamage": {
+        "description": "Deal $$% increased damage",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 5,
+        "highPointItemLevelScaling": 1,
+        "baseRange": 3,
+        "baseRangeInstablityScaling": 0.4,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {}
+    },
+    "APRegen": {
+        "description": "Restore $$ more Action Points each turn in combat",
+        "modWeight": 1,
+        "minimumItemLvl": 10,
+        "midPoint": 1,
+        "highPointItemLevelScaling": 0.03,
+        "baseRange": 0.01,
+        "baseRangeInstablityScaling": 0.02,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {},
+        "maximumValue": 2
+    },
+    "flatToAP": {
+        "description": "+$$ maximum Action Points in combat",
+        "modWeight": 2,
+        "minimumItemLvl": 10,
+        "midPoint": 1,
+        "highPointItemLevelScaling": 0.05,
+        "baseRange": 0.01,
+        "baseRangeInstablityScaling": 0.02,
+        "baseTagMagnitudeModifiers": {"weapon": 2},
+        "baseTagWeigthModifiers": {},
+        "maximumValue": 2
+    },
+    "flatToAssault": {
+        "description": "+$$ to Assault Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 2, "psi": 0.5, "tactics": 0.5},
+        "baseTagWeigthModifiers": {"assault": 2, "psi": 0.2, "tactics": 0.2},
+    },
+    "flatToPSI": {
+        "description": "+$$ to PSI Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 0.5, "psi": 2, "tactics": 0.5},
+        "baseTagWeigthModifiers": {"assault": 0.2, "psi": 2, "tactics": 0.2},
+    },
+    "flatToTactics": {
+        "description": "+$$ to Tactics Skill",
+        "modWeight": 5,
+        "minimumItemLvl": 0,
+        "midPoint": 2,
+        "highPointItemLevelScaling": 0.5,
+        "baseRange": 1,
+        "baseRangeInstablityScaling": 0.2,
+        "baseTagMagnitudeModifiers": {"assault": 0.5, "psi": 0.5, "tactics": 2},
+        "baseTagWeigthModifiers": {"assault": 0.2, "psi": 0.2, "tactics": 2},
+    }
+}
