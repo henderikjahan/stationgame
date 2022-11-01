@@ -3,106 +3,107 @@
 
 import random
 from math import floor
-from itemBasesData import baseTypes
-from modData import itemMods
+from itemBasesData import base_types
+from modData import item_mods
 
 
-def generateItem(
-    itemLevel: int = 0,
-    inStability: int = 0,
+def generate_item(
+    item_level: int = 0,
+    instability: int = 0,
 ):
     def selectBaseType():
-        eligibleBaseTypes = {k: v for (k, v) in baseTypes.items() if (
-            ("minimumItemLvl" not in v or v["minimumItemLvl"] <= itemLevel)
-            and ("minimumInstabilityLvl" not in v or v["minimumInstabilityLvl"] <= inStability)
+        eligible_base_types = {k: v for (k, v) in base_types.items() if (
+            ("minimumItemLvl" not in v or v["minimumItemLvl"] <= item_level)
+            and ("minimumInstabilityLvl" not in v or v["minimumInstabilityLvl"] <= instability)
         )}
-        orderedEligibleBaseTypesNames = list(eligibleBaseTypes)
-        orderedEligibleBaseTypesWeights = [baseTypes[x]["baseWeight"]
-                                           for x in orderedEligibleBaseTypesNames]
+        ordered_eligible_base_types_names = list(eligible_base_types)
+        ordered_eligible_base_types_weights = [base_types[x]["baseWeight"]
+                                               for x in ordered_eligible_base_types_names]
         selectedBaseType = random.choices(
-            orderedEligibleBaseTypesNames, weights=orderedEligibleBaseTypesWeights, k=1)[0]
+            ordered_eligible_base_types_names, weights=ordered_eligible_base_types_weights, k=1)[0]
 
-        return baseTypes[selectedBaseType]
+        return base_types[selectedBaseType]
 
-    def rollMod(
+    def roll_mod(
         mod: any,
-        itemLevel: int,
+        item_level: int,
         instability: int,
-        baseType: any,
+        base_type: any,
     ):
-        if "instabilityMultiplier" in baseType:
-            instability = instability * baseType["instabilityMultiplier"]
+        if "instability_multiplier" in base_type:
+            instability = instability * base_type["instability_multiplier"]
 
-        range = mod["baseRange"] + \
-            (mod["baseRangeInstablityScaling"] * instability)
-        lowpoint = mod["midPoint"] - range
-        highpoint = mod["midPoint"] + range + \
-            (mod["highPointItemLevelScaling"] * itemLevel)
+        range = mod["base_range"] + \
+            (mod["base_range_instablity_scaling"] * instability)
+        lowpoint = mod["mid_point"] - range
+        highpoint = mod["mid_point"] + range + \
+            (mod["high_point_item_level_scaling"] * item_level)
 
-        modRoll = floor(random.uniform(lowpoint, highpoint))
-        for magnitudeModifierTag in mod["baseTagMagnitudeModifiers"]:
-            if magnitudeModifierTag in baseType["baseTags"]:
-                modRoll = modRoll * \
-                    mod["baseTagMagnitudeModifiers"][magnitudeModifierTag]
+        mod_roll = floor(random.uniform(lowpoint, highpoint))
+        for magnitude_modifier_tag in mod["base_tag_magnitude_modifiers"]:
+            if magnitude_modifier_tag in base_type["base_tags"]:
+                mod_roll = mod_roll * \
+                    mod["base_tag_magnitude_modifiers"][magnitude_modifier_tag]
 
-        if "modMultiplier" in baseType:
-            modRoll = modRoll * baseType["modMultiplier"]
+        if "mod_multiplier" in base_type:
+            mod_roll = mod_roll * base_type["mod_multiplier"]
 
-        modText = mod["description"].replace("$$", str(int(modRoll)))
+        mod_text = mod["description"].replace("$$", str(int(mod_roll)))
 
-        return modText
+        return mod_text
 
     def generateMods(
-        baseType: any,
-        modAmount: int
+        base_type: any,
+        mod_amount: int
     ):
-        eligibleMods = {k: v for (k, v) in itemMods.items() if (
-            ("minimumItemLvl" not in v or v["minimumItemLvl"] <= itemLevel)
-            and ("minimumInstabilityLvl" not in v or v["minimumInstabilityLvl"] <= inStability)
+        eligible_mods = {k: v for (k, v) in item_mods.items() if (
+            ("minimum_item_lvl" not in v or v["minimum_item_lvl"]
+             <= item_level)
+            and ("minimum_instability_lvl" not in v or v["minimum_instability_lvl"] <= instability)
         )}
-        orderedEligibleModNames = list(eligibleMods)
-        orderedEligibleModWeights = []
+        ordered_eligible_mod_names = list(eligible_mods)
+        ordered_eligible_mod_weights = []
 
-        baseTags = baseType["baseTags"]
-        for modName in orderedEligibleModNames:
-            itemMod = itemMods[modName]
+        baseTags = base_type["baseTags"]
+        for modName in ordered_eligible_mod_names:
+            itemMod = item_mods[modName]
             modWeight = itemMod["modWeight"]
 
-            if "baseTagWeigthModifiers" in itemMod:
+            if "base_tag_weigth_modifiers" in itemMod:
                 for baseTag in baseTags:
-                    if baseTag in itemMod["baseTagWeigthModifiers"]:
-                        amountToModifyTag = itemMod["baseTagWeigthModifiers"][baseTag]
+                    if baseTag in itemMod["base_tag_weigth_modifiers"]:
+                        amountToModifyTag = itemMod["base_tag_weigth_modifiers"][baseTag]
                         modWeight = modWeight * amountToModifyTag
-            orderedEligibleModWeights.append(modWeight)
+            ordered_eligible_mod_weights.append(modWeight)
 
         selectedMods = []
 
-        while (len(selectedMods) < modAmount):
+        while (len(selectedMods) < mod_amount):
             # check if no mods are left over, if so, exit while loop
-            if (max(orderedEligibleModWeights) == 0):
+            if (max(ordered_eligible_mod_weights) == 0):
                 break
 
             # select a mod, append it and set its weight to zero
             selectedMod = random.choices(
-                orderedEligibleModNames, weights=orderedEligibleModWeights, k=1)[0]
+                ordered_eligible_mod_names, weights=ordered_eligible_mod_weights, k=1)[0]
             selectedMods.append(selectedMod)
-            orderedEligibleModWeights[orderedEligibleModNames.index(
+            ordered_eligible_mod_weights[ordered_eligible_mod_names.index(
                 selectedMod)] = 0
 
         # for each selected mod, decide mod roll
         rolledMods = []
         for modName in selectedMods:
-            rolledMod = rollMod(itemMods[modName],
-                                itemLevel, inStability, baseType)
+            rolledMod = roll_mod(item_mods[modName],
+                                 item_level, instability, base_type)
             # TODO prevent zero value mods from being appended here
             rolledMods.append(rolledMod)
 
         return rolledMods
 
-    def decideModAmount(itemLevel):
+    def decideModAmount(item_level):
         # TODO accept base type as argument - some base types should have less mods
         # minimum mod amount 1 - max 5, but very rare.
-        return random.choices([1, 2, 3, 4, 5], weights=[80, 60 + itemLevel, 20 + itemLevel, 3 + itemLevel, 0 + itemLevel])[0]
+        return random.choices([1, 2, 3, 4, 5], weights=[80, 60 + item_level, 20 + item_level, 3 + item_level, 0 + item_level])[0]
 
     # select is unique item?
     # select special mod template? Maybe give special items generated red background
@@ -111,7 +112,7 @@ def generateItem(
     itemName = random.choice(
         baseType["names"]) if "names" in baseType else "Item"
 
-    modAmount = decideModAmount(itemLevel)
+    modAmount = decideModAmount(item_level)
 
     selectedItemMods = generateMods(baseType, modAmount)
 
@@ -121,4 +122,4 @@ def generateItem(
     # returned itemMods should be associated with player mods file
 
 
-print(generateItem(itemLevel=25, inStability=20))
+print(generate_item(item_level=25, instability=20))
