@@ -17,7 +17,6 @@ player_gl = player_stat.PlayerStat(
     )
     # player_gl expects a "playerstat object"
 
-# ! 24-10, was bezig met psi implementeren in het spel
 
 enemies = [
     enemy.BorgerBurger,
@@ -35,8 +34,9 @@ random_battle = bgp.BattleGameplay(
 )
 
 # to do list
-# rename moves -> moves
 # verander stat bij player battler en global betreft discord post
+# verander psi -> move (list)
+# maak vorderingen in move van (player) battle_gameplay
 
 # <-- Notes -->
 
