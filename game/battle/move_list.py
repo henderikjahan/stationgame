@@ -3,11 +3,11 @@ from game.tools import print
 
 # -- classes --
 
-class CommandBase:
+class MoveBase:
     def __init__(self):
 
         self.ap_cost = 0
-        self.command_power = 1
+        self.move_power = 1
         self.attack_type = "Placeholder"
 
     def check_legality_target(self, target_battler, status_list = ["Felled"], check_for_illegality = True):
@@ -35,16 +35,16 @@ class CommandBase:
             print( f"{str_targetbattler} is not afflicted with anything!")
             return False
 
-        print("!check_legality_target from command_list cannot find")
+        print("!check_legality_target from move_list cannot find")
         return False
 
     def use(self, user_battler, target_battler):
         pass
 
-    def damage_single_target(self, user_battler, target_battler, command_power, attack_type= "Placeholder"):
+    def damage_single_target(self, user_battler, target_battler, move_power, attack_type= "Placeholder"):
 
         raw_damage = user_battler.deal_damage_Base(
-            command_power= command_power
+            move_power= move_power
             )
 
         target_battler.take_damage(
@@ -60,7 +60,7 @@ class CommandBase:
 
         return weakness_hit
 
-    def _old_damage_single_target(self, user_battler, target_battler, command_power, attack_type= "Placeholder"):
+    def _old_damage_single_target(self, user_battler, target_battler, move_power, attack_type= "Placeholder"):
         # !depecrated element
         weakness_hit = self.weakness_check(
             target_battler= target_battler, 
@@ -68,7 +68,7 @@ class CommandBase:
             )
 
         raw_damage = user_battler.deal_damage_Base(
-            command_power= command_power,
+            move_power= move_power,
             weakness_hit= weakness_hit
             )
 
@@ -80,28 +80,55 @@ class CommandBase:
             target_battler.apply_break_status()
 
 
-class Attack(CommandBase):
+class Attack(MoveBase):
     def __init__(self):
         self.ap_cost = 1
-        self.command_power = 1.0
+        self.move_power = 1.0
         self.attack_type = "Something"
 
+    def use(self, user_battler, target_battler):
+        if not check_legality_target(target_battler= target_battler):
+            return False
 
-class Fire(CommandBase):
+        ap_cost = 1
+        continue_move = user_battler.reduce_self_ap(ap_cost)
+        # continue move is True or False, depending whether the cost can be paid
+
+        if continue_move:
+
+            move_power = 1.0
+            
+            raw_damage = user_battler.deal_damage_Base(move_power= move_power)
+            
+            # message
+            str_userbattler = str(user_battler.name)
+            str_targetbattler = str(target_battler.name)
+            print( f"{str_userbattler} attacked {str_targetbattler}!")
+
+            target_battler.take_damage(raw_damage= raw_damage)
+
+
+        else:
+            # ap cost too low
+            str_userbattler = str(user_battler.name)
+            print( f"{str_userbattler}'s AP is too low!")
+
+
+class Fire(MoveBase):
     def __init__(self):
         
         self.ap_cost = 2
-        self.command_power = 2.0
+        self.move_power = 2.0
         self.attack_type = "Heat"
 
     def use(self, user_battler, target_battler):
         if not check_legality_target(target_battler= target_battler):
             return False
 
-        continue_command = user_battler.reduce_self_ap(self.ap_cost)
-        # continue command is True or False, depending whether the cost can be paid
+        continue_move = user_battler.reduce_self_ap(self.ap_cost)
+        # continue move is True or False, depending whether the cost can be paid
 
-        if continue_command:
+        if continue_move:
             # message
             str_userbattler = str(user_battler.name)
             str_targetbattler = str(target_battler.name)
@@ -111,7 +138,7 @@ class Fire(CommandBase):
             self.damage_single_target(
                 user_battler= user_battler,
                 target_battler= target_battler,
-                command_power= self.command_power,
+                move_power= self.move_power,
                 attack_type= self.attack_type
             )
 
@@ -149,7 +176,7 @@ def check_legality_target(target_battler, status_list = ["Felled"], check_for_il
         print( f"{str_targetbattler} is not afflicted with anything!")
         return False
 
-    print("!check_legality_target from command_list cannot find")
+    print("!check_legality_target from move_list cannot find")
     return False
 
 
@@ -159,14 +186,14 @@ def attack(user_battler, target_battler = None):
         return False
 
     ap_cost = 1
-    continue_command = user_battler.reduce_self_ap(ap_cost)
-    # continue command is True or False, depending whether the cost can be paid
+    continue_move = user_battler.reduce_self_ap(ap_cost)
+    # continue move is True or False, depending whether the cost can be paid
 
-    if continue_command:
+    if continue_move:
 
-        command_power = 1.0
+        move_power = 1.0
         
-        raw_damage = user_battler.deal_damage_Base(command_power= command_power)
+        raw_damage = user_battler.deal_damage_Base(move_power= move_power)
         
         # message
         str_userbattler = str(user_battler.name)
@@ -187,7 +214,7 @@ def fire(stat):
     if "Base Attack" in stat:
         return stat["Base Attack"] * 1.8
     else:
-        print("Command Fire cannot find Base Attack")
+        print("Move Fire cannot find Base Attack")
         return 0.0
 
 
@@ -196,6 +223,6 @@ def armorbash(stat):
     if "Physical Defense" in stat:
         return stat["Physical Defense"]
     else:
-        print("Command Armorbash cannot find Physical Defense")
+        print("Move Armorbash cannot find Physical Defense")
         return 0.0
 

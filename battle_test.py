@@ -4,10 +4,16 @@ from game.battle import battle_gameplay as bgp
 # --imports--
 from game.battle import player_stat
 from game.battle import enemy_list as enemy
+from game.battle import move_list as move
 
 # --setup player/enemy stat--
+# psi list should contain ready to use objects
+setup_psi = {
+    "Fire": move.Fire()
+}
+
 player_gl = player_stat.PlayerStat(
-    psi= {}
+    psi= setup_psi
     )
     # player_gl expects a "playerstat object"
 
@@ -28,8 +34,9 @@ random_battle = bgp.BattleGameplay(
     loop= True
 )
 
-
-
+# to do list
+# rename moves -> moves
+# verander stat bij player battler en global betreft discord post
 
 # <-- Notes -->
 

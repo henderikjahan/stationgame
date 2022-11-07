@@ -1,9 +1,9 @@
 import math
-from game.battle import command_list as command
+from game.battle import move_list as move
 from game.battle import status_list as status
 from game.tools import print
 
-    
+
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
 class Battler:
@@ -83,7 +83,7 @@ class Battler:
         # at end of turn passives
 
 
-    def deal_damage_Base(self, command_power, weakness_hit = False):
+    def deal_damage_Base(self, move_power, weakness_hit = False):
         # use etc here
         # deals damage with base attack in mind
 
@@ -93,7 +93,7 @@ class Battler:
             else:
                 effective_multiplier = 1.0
         
-        raw_damage = self.stat["Base Attack"] * command_power
+        raw_damage = self.stat["Base Attack"] * move_power
 
 
         return raw_damage
@@ -170,15 +170,23 @@ class Battler:
 
 # <-- Enemy Battler class -->
 class EnemyBattler(Battler):
-    def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None):
+    def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None, move_dict=None):
         super().__init__(statsdict, weakness, status, name, battle_ref)
+
+        # setup of move_list
+        if isinstance(move_dict, dict):
+            self.move_dict = move_dict
+        else:
+            self.move_dict = {
+                "attack": move.Attack()
+            }
 
     def player(self):
         return self.battle_ref.player_battler
 
 # <-- Player battler class -->
 class PlayerBattler(Battler):
-    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, battle_ref = None):
+    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, basic_attack = None, battle_ref = None):
 
         Battler.__init__(
             self, 
@@ -193,9 +201,12 @@ class PlayerBattler(Battler):
             equipment = {}
         if psi == None:
             psi = {}
+        if basic_attack == None:
+            basic_attack = move.Attack()
         
         self.equipment = equipment
         self.psi = psi
+        self.basic_attack = basic_attack
 
     def low_ap_message(self):
         str_selfname = str(self.name)
@@ -213,8 +224,8 @@ class BattleGameplay:
         self.player_battler = PlayerBattler(
             statsdict = player_gl.stat,
             equipment = player_gl.equipment,
-            battle_ref = self
-            #,psi = player_gl.psi
+            battle_ref = self,
+            psi = player_gl.psi
         )
 
         # enemy objects setup
@@ -373,7 +384,7 @@ class BattleGameplay:
         print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
         print(f"Player AP: {str_plAP}")
         if not takeninput:
-            print("\n--Choose command--")
+            print("\n--Choose move--")
             print("Attack (1*)| Psi | TurnPass | Exit")
 
         # creating a reference for the enemies
@@ -392,18 +403,39 @@ class BattleGameplay:
 
             case ["attack" | "a", *target]: 
                 #target is a single string in a list
-                # note to self, please make this more neat
+                # used_move, needs to be an 
+                used_move = self.player_battler.basic_attack.use
                 self.targeting_tool(
                     user_battler= self.player_battler,
                     enemies_list= self.enemies_list,
-                    command_function= command.attack,
+                    move_function= used_move,
                     target_input= target
                 )
+                if False:
+                    self.targeting_tool(
+                        user_battler= self.player_battler,
+                        enemies_list= self.enemies_list,
+                        move_function= move.attack,
+                        target_input= target
+                    )
 
-            case ["psi" | "p"]:
+            case ["psi" | "p", *target]:
                 print("choose psi")
                 # Doesn't work at the moment
+                # 31-10, busy on this
+
+                if True:
+                    used_move = self.player_battler.psi["Fire"].use
+
+                    self.targeting_tool(
+                        user_battler= self.player_battler,
+                        enemies_list= self.enemies_list,
+                        move_function= used_move,
+                        target_input= target
+                    )
+                
                 while False:
+                    self.get_player_psi()
                     takeninput = input("Input: ")
             
             case ["turnpass" | "t" | "tp"]:
@@ -421,8 +453,8 @@ class BattleGameplay:
         enemy_battler.self_behaviour()
         
 
-    def targeting_tool(self, user_battler, enemies_list, command_function, target_input = None):
-        # targeting tool used by player battler, requires commands
+    def targeting_tool(self, user_battler, enemies_list, move_function, target_input = None):
+        # targeting tool used by player battler, requires moves
         target_exists, target_battler = self.check_target(
             enemies_list = enemies_list,
             target = target_input
@@ -430,7 +462,7 @@ class BattleGameplay:
         if target_exists == False:
             return
         
-        command_function(user_battler, target_battler)
+        move_function(user_battler, target_battler)
 
 
     def check_target(self, enemies_list, target):

@@ -1,5 +1,5 @@
 from .battle_gameplay import EnemyBattler
-from . import command_list as command
+from . import move_list as move
 
 
 class BorgerBurger(EnemyBattler):
@@ -34,7 +34,7 @@ class BorgerBurger(EnemyBattler):
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                command.attack(
+                move.attack(
                     user_battler= self,
                     target_battler= self.player()
                 )
@@ -73,7 +73,7 @@ class MagicalMayonaise(EnemyBattler):
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                command.attack(
+                move.attack(
                     user_battler= self,
                     target_battler= self.player()
                 )
@@ -115,7 +115,7 @@ class Placeholder(EnemyBattler):
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                command.attack(
+                move.attack(
                     user_battler= self,
                     target_battler= self.player()
                 )

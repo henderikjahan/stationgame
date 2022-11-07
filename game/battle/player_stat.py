@@ -1,11 +1,13 @@
+from . import move_list as move
 
 # When changing the file location of this file, don't forget about the import:
-# battle_v02    
-# *list updated in 12-9-2022
+# battle_gameplay.py
+# battle_test.py
+# *list updated in 27-10-2022
 
 
 class PlayerStat:
-    def __init__(self, playerstatdict = {}, player_equipment = {}, psi = {}):
+    def __init__(self, playerstatdict = {}, player_equipment = {}, psi = {}, basic_attack = None):
 
         # !When having thoughts about certain stats, please share!
         # base stats
@@ -18,7 +20,9 @@ class PlayerStat:
             "Turn AP": 3,	# Turn Action points, determines the amount of AP the battlers can gain per turn at start
             "Max AP": 5,    # Maximum Action points, which can be banked
         }
+        self.psi = {}
         self.equipment = {}
+
 
         # changes/add stats based on playerstatdict
         for entry in playerstatdict:
@@ -27,9 +31,13 @@ class PlayerStat:
         # changes/add equipment based on player_equipment
         for entry in player_equipment:
             self.equipment[entry] = player_equipment[entry]
-        
-        #changes/add psi commands based on psi
+
+        #changes/add psi moves based on psi
         for entry in psi:
-            self.psi[entry] = psi["entry"]
+            self.psi[entry] = psi[entry]
+        
+        # basic attack, expects a move class object
+        if basic_attack == None:
+            self.basic_attack = move.Attack()
     
 
