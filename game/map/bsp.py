@@ -6,7 +6,7 @@ from random import randrange
 from random import choice
 from random import randint
 
-from .tile import TileWall, TileSpace, TileDoor
+from .tile import TileWall, TileSpace, TileDoor, TileBillboardProp
 
 
 class Room:
@@ -95,6 +95,14 @@ class BSP:
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     self.tiles[x, y] = TileSpace()
+
+            try:
+                for i in range(5):
+                    x = randint(room_start_x+2, (room_start_x+room_width)-2)
+                    y = randint(room_start_y+2, (room_start_y+room_height)-2)
+                    self.tiles[x, y] = TileBillboardProp()
+            except ValueError:
+                pass
 
     def are_rooms_adjacent(self, room1, room2):
         adj_ys = []

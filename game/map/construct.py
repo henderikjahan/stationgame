@@ -44,6 +44,13 @@ class MeshMap():
         tile_texture(tile, self.texture, *frames[0], 8)
         return tile
 
+    def build_billboard(self, x, y, tiles):
+        tile = tiles[x, y]
+        shape = self.build_tile(x, y, "billboard_"+tile.size, frames=[tile.uv])
+        shape.set_billboard_point_eye()
+        shape.set_transparency(True)
+        self.build_floor_ceiling(x, y)
+
     def build_floor_ceiling(self, x, y):
         for i, name in enumerate(("ceiling", "floor")):
             name = name+"_even" if (x+y)%2 else name+"_uneven"
@@ -94,7 +101,9 @@ class MeshMap():
                 if tiles[x,y].char == "#":
                     self.build_walls(x, y, tiles)
                 elif tiles[x,y].char == "+":
-                    self.build_doorway(x,y,tiles)
+                    self.build_doorway(x, y, tiles)
+                elif tiles[x,y].char == "%":
+                    self.build_billboard(x, y, tiles)
                 else:
                     self.build_floor_ceiling(x, y)
 
