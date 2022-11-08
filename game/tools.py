@@ -1,5 +1,6 @@
 import builtins
 from panda3d.core import Vec2, Vec3
+from panda3d.core import NodePath
 from panda3d.core import CardMaker
 
 
@@ -8,7 +9,7 @@ def print(string):
         base.print(string)
     except NameError:
         builtins.print(string)
-        
+
 def load_as_dict(filename):
     child_dict = {}
     models = loader.load_model(filename)
@@ -33,7 +34,7 @@ def roundvec(vec):
     for v, value in enumerate(vec):
         rounded[v] = int(value)
     return rounded
-    
+
 def evenvec2(a, n=2):
     for index, value in enumerate(a):
         if value%2 == 1:
@@ -47,7 +48,6 @@ def is_in(x, y, size):
 def rotate_mat3(sub):
     return list(zip(*sub[::-1]))
 
-
 def tile_texture(nodepath, texture, x, y, tiles_per_row):
     y = y+1 # Innocent hack. Something is off about this math.
     texture.set_minfilter(0)
@@ -57,6 +57,37 @@ def tile_texture(nodepath, texture, x, y, tiles_per_row):
         w = h = 1/tiles_per_row
         nodepath.set_tex_scale(texture_stage, w, h)
         nodepath.set_tex_offset(texture_stage, x*w, 1-(y*w))
+
+def tile_animation(nodepath, texture, frames=[(0,0), (1,0)], tiles_per_row=8, framerate=24):
+    sequenced = NodePath(nodepath.name)
+    sequence = SequenceNode(nodepath.name)
+    sequences.attach_new_node(sequence)
+    for frame in frames:
+        new = nodepath.copy_to(sequenced)
+        tile_texture(new, texture, frame[0], frame[1], tiles_per_row)
+        sequence.add_child(new.node()) # WARNING: this might not copy the texture offset
+    sequence.set_frame_rate(framerate)
+    sequence.loop(True)
+    return sequenced
+
+def flatten_sequence(sequences_nodepath):
+    sequences =  sequences_nodepath.get_children()
+    flattened_sequence = SequenceNode(sequence[0].name)
+    for a, animation in enumerate(sequence[0].node().get_children()):
+        for f, frame in enumerate(animation.get_child(0).get_children()):
+            combined_frame = NodePath("frame " + str(f))
+            for sequence in sequences:
+                new_np = NodePath("frame")
+                new_np.set_pos(sequence.get_pos())
+                animation = sequence.node().get_child(a).get_child(0)
+                new_np.attach_new_node(animation.get_child(f))
+                new_np.reparent_to(combined_frame)
+            combined_frame.flattenStrong()
+            flattened_sequence.add_child(combined_frame.node())
+    framerate = animation.get_frame_rate()
+    flattened_sequence.set_frame_rate(framerate)
+    flattened_sequence.loop(True)
+    return NodePath(flattened_sequence)
 
 def render_to_texture(root):
     # Render to texture
@@ -74,3 +105,13 @@ def render_to_texture(root):
     camera = base.make_camera(buffer)
     camera.reparent_to(root)
     return camera
+
+
+
+
+
+
+
+
+
+
