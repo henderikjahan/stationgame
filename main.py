@@ -52,21 +52,22 @@ class Sequencer():
         self.parallel.start()
         self.running = True
 
-        
+
 class Printer:
     def __init__(self):
         self.buffer = []
-    
+
     def print(self, string):
         print("printer:", string)
         self.buffer.append(string)
 
-        
+
 loadPrcFile(Filename.expand_from("$MAIN_DIR/settings.prc"))
 base = ShowBase()
 base.win.set_clear_color((0.1,0.1,0.1,1))
 add_device_listener(assigner=SinglePlayerAssigner())
 base.accept("escape", sys.exit)
+base.accept("f12", render.ls)
 base.sequencer = Sequencer()
 base.transitions = Transitions(loader)
 base.cardmaker = CardMaker("card")

@@ -12,39 +12,48 @@ class MeshMap():
         self.tiles = tiles
         self.texture = texture
         self.root = NodePath("map")
-        self.flattened = self.root.attach_new_node("flattened")
         self.tilemap = BSP()
         self.start = choice(list(self.tilemap.tiles.keys()))
-        self.build_map(self.tilemap.tiles)
-        self.flattened.flatten_strong()
 
+        self.rooms = {}
+        for room in self.tilemap.rooms+[None]:
+            root = self.root.attach_new_node(str(room))
+            self.rooms[room] = {
+                "root": root,
+                "flat": root.attach_new_node("flat"),
+                "dynamic":root.attach_new_node("animated"),
+            }
+
+        self.build_map(self.tilemap.tiles)
+        for key, value in self.rooms.items():
+            value["flat"].flatten_strong()
+
+    def print_out(self):
         for y in range(0,32):
             s = ""
             for x in range(0,32):
                 s += self.tilemap.tiles[x, y].char
             print(s)
 
-    def build_floor_ceiling(self, x, y):
-        for i, name in enumerate(("ceiling", "floor")):
-            if (x+y)%2:
-                name += "_even"
-            else:
-                name += "_uneven"
-            tile = self.tiles[name].copy_to(self.flattened)
-            tile.set_pos(x, -y, 0)
-            
-            tx = choice((0,2,3,4)) if randint(0,4) == 0 else 0
-            if (x+y)%2 and randint(0,2): tx = 1
-            
-            tile_texture(tile, self.texture, tx,4*i, 8)
-
-    def build_wall(self, x, y, tile_name, direction):
-        tile = self.tiles[tile_name].copy_to(self.flattened)
+    def build_tile(self, x, y, tile_name, direction=0, frames=[]):
+        # TODO: if len(frames) > 1: it's an animated tile
+        room = self.rooms[self.tilemap.get_room_bordered(x, y)]
+        tile = self.tiles[tile_name].copy_to(room['flat'])
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
-        x = randint(0,3) if tile_name == "l_none_r_none" and randint(0,1) else 0
-        tile_texture(tile, self.texture, x, 2, 8)
-        
+        tile_texture(tile, self.texture, *frames[0], 8)
+        return tile
+
+    def build_floor_ceiling(self, x, y):
+        for i, name in enumerate(("ceiling", "floor")):
+            name = name+"_even" if (x+y)%2 else name+"_uneven"
+            tx = choice((0,2,3,4)) if randint(0,4) == 0 else 0
+            if (x+y)%2 and randint(0,2): tx = 1
+            tile = self.build_tile(x, y, name, frames=[(tx,4*i)])
+
+    def build_wall(self, x, y, tile_name, direction):
+        u = randint(0,3) if tile_name == "l_none_r_none" and randint(0,1) else 0
+        tile = self.build_tile(x, y, tile_name, direction, [(u, 2)])
         self.build_floor_ceiling(x, y)
 
     def build_walls(self, px, py, tiles):
@@ -71,13 +80,10 @@ class MeshMap():
             sub = rotate_mat3(sub)
 
     def build_doorway(self, x, y, tiles):
-        doorway = self.tiles["doorway"].copy_to(self.flattened)
-        tile_texture(doorway, self.texture, 0,2, 8)
-        tile = tiles[x, y]
-        doorway.set_pos(x,-y,0)
-        if tiles[x,y-1].char == "#":
-            doorway.set_h(90)
-        tile.door = doorway.find("**/door")
+        d = 1 if tiles[x,y-1].char == "#" else 0
+        tile = tiles[x,y]
+        shape = self.build_tile(x, y, 'doorway', d, frames=[(0,2)])
+        tile.door = shape.find("**/door")
         tile_texture(tile.door, self.texture, 5,0, 8)
         tile.door.wrt_reparent_to(self.root)
         self.build_floor_ceiling(x, y)

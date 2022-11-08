@@ -16,9 +16,6 @@ class Game:
         )
         self.map.root.reparent_to(render)
         self.player = Player(self.map, camera=render_to_texture(render))
-        render.ls()
-
-        #base.gui = ItemGui()
 
     def make_celest(self):
         celest = render.attach_new_node('celest')

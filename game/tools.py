@@ -105,13 +105,3 @@ def render_to_texture(root):
     camera = base.make_camera(buffer)
     camera.reparent_to(root)
     return camera
-
-
-
-
-
-
-
-
-
-
