@@ -1,6 +1,6 @@
 
 class Stats:
-    def __init__(self, statdict = {}, equipment = {}, psi = {}):
+    def __init__(self, statdict = {}, equipment = {}, moves = {}):
 
         # !When having thoughts about certain stats, please share!
         # base stats
@@ -9,16 +9,18 @@ class Stats:
             "Max HP": 50,	# Maximum Hit points
             "HP Regen": 0,
             
-            "Assault": 5,	# Base attack stat
-            "Tactics": 10,	# Damage reduction of receiving Physical attacks: damageReceived = 100/(100+defense)
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
             "Psi": 10,
 
-            "Assault Defence": 5, # Base attack stat
-            "Tactical Defense": 10,	# Damage reduction of receiving Physical attacks: damageReceived = 100/(100+defense)
-            "Psi Defense": 10,	# Damage reduction of receiving Psi attacks: damageReceived = 100/(100+defense)
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
 
             "Dodge": 10, # Avoid rage and tactical, but not psi.
-         
+
             "Heat Affinity": 10,
             "Elec Affinity": 10,
             "Data Affinity": 10,
@@ -36,17 +38,18 @@ class Stats:
             "Turn AP": 3,	# Turn Action points, determines the amount of AP the battlers can gain per turn at start
             "Max AP": 5,    # Maximum Action points, which can be banked
         }
-        self.equipment = {}
 
-        # changes/add stats based on playerstatdict
+        # changes/add stats based on statdict
         for entry in statdict:
             self.stat[entry] = statdict[entry]
         
-        # changes/add equipment based on player_equipment
+        # changes/add equipment based on given equipment
+        self.equipment = {}
         for entry in equipment:
             self.equipment[entry] = equipment[entry]
         
-        #changes/add psi commands based on psi
-        for entry in psi:
-            self.psi[entry] = psi["entry"]
+        #changes/add moves based on given moves
+        self.moves = {}
+        for entry in moves:
+            self.moves[entry] = moves[entry]
     
