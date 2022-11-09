@@ -1,7 +1,7 @@
 # baseRange is allowed mod values around the range beween midPoint and highPoint
 # by default, highpoint is the same as midPoint
 item_mods = {
-    "flat_max_hp": {
+    "flat_to_max_hp": {
         "description": "$$ to maximum HP",
         "mod_weight": 20,
         "minimum_item_lvl": 0,
