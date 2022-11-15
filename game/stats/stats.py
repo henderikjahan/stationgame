@@ -1,9 +1,3 @@
-# TODO move this info to mod_data.py
-available_mods = {
-    "flat_to_max_hp": {"related_basic_stat": "max_HP", "relation": "flat_addition"},
-    "increased_max_hp": {"related_basic_stat": "max_HP", "relation": "percentage_increase"}
-}
-
 current_mods = [
     {"modName": "flat_to_max_hp", "value": 40,
         "source": "item", "source_item": "itemID"},
@@ -14,7 +8,10 @@ current_mods = [
 ]
 
 
-basic_stats = {"max_HP": 50, "max_AP": 3, "AP_regen": 3}
+basic_stats = {"max_HP": 50, "max_AP": 3,
+               "AP_regen": 3, "HP_Regen": 0, "more_generic_dmg": 0,
+               "increased_assault_dmg": 0, "increased_tactics_dmg": 0,
+               "increased_psi_dmg": 0, }
 
 # Should current hp and current ap be stored here?
 current_stats = {

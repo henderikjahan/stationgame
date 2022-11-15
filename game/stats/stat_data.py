@@ -10,7 +10,9 @@ item_mods = {
         "base_range": 5,
         "base_range_instablity_scaling": 0.2,
         "base_tag_magnitude_modifiers": {},
-        "base_tag_weigth_modifiers": {"weapon": 0}
+        "base_tag_weigth_modifiers": {"weapon": 0},
+        "related_basic_stat": "max_HP",
+        "relation": "flat_addition"
     },
     "increased_max_hp": {
         "description": "$$% increased maximum HP",
@@ -21,7 +23,9 @@ item_mods = {
         "base_range": 2,
         "base_range_instablity_scaling": 0.2,
         "base_tag_magnitude_modifiers": {},
-        "base_tag_weigth_modifiers": {"weapon": 0}
+        "base_tag_weigth_modifiers": {"weapon": 0},
+        "related_basic_stat": "max_HP",
+        "relation": "percentage_increase"
     },
     "flat_regen_hp": {
         "description": "$$ HP restored per step",
@@ -32,7 +36,9 @@ item_mods = {
         "base_range": 1,
         "base_range_instablity_scaling": 0.2,
         "base_tag_magnitude_modifiers": {},
-        "base_tag_weigth_modifiers": {"weapon": 0}
+        "base_tag_weigth_modifiers": {"weapon": 0},
+        "related_basic_stat": "HP_Regen",
+        "relation": "flat_addition"
     },
     "increased_hp_regen": {
         "description": "$$% increased HP restored per step",
@@ -43,18 +49,9 @@ item_mods = {
         "base_range": 10,
         "base_range_instablity_scaling": 1,
         "base_tag_magnitude_modifiers": {},
-        "base_tag_weigth_modifiers": {"weapon": 0}
-    },
-    "increased_generic_damage": {
-        "description": "deal $$% increased damage",
-        "mod_weight": 5,
-        "minimum_item_lvl": 0,
-        "mid_point": 5,
-        "high_point_item_level_scaling": 1,
-        "base_range": 3,
-        "base_range_instablity_scaling": 0.4,
-        "base_tag_magnitude_modifiers": {"weapon": 2},
-        "base_tag_weigth_modifiers": {}
+        "base_tag_weigth_modifiers": {"weapon": 0},
+        "related_basic_stat": "HP_Regen",
+        "relation": "percentage_increase"
     },
     "ap_regen": {
         "description": "Restore $$ more Action Points each turn in combat",
@@ -66,7 +63,9 @@ item_mods = {
         "base_range_instablity_scaling": 0.02,
         "base_tag_magnitude_modifiers": {"weapon": 2},
         "base_tag_weigth_modifiers": {},
-        "maximum_value": 2
+        "maximum_value": 2,
+        "related_basic_stat": "AP_regen",
+        "relation": "flat_addition"
     },
     "flat_to_ap": {
         "description": "+$$ Maximum Action Points in combat",
@@ -78,39 +77,60 @@ item_mods = {
         "base_range_instablity_scaling": 0.02,
         "base_tag_magnitude_modifiers": {"weapon": 2},
         "base_tag_weigth_modifiers": {},
-        "maximum_value": 2
+        "maximum_value": 2,
+        "related_basic_stat": "max_AP",
+        "relation": "flat_addition"
     },
-    "flat_to_assault": {
-        "description": "+$$ to Assault skill",
+    "more_generic_dmg": {
+        "description": "deal $$% more total damage",
         "mod_weight": 5,
         "minimum_item_lvl": 0,
-        "mid_point": 2,
-        "high_point_item_level_scaling": 0.5,
-        "base_range": 1,
-        "base_range_instablity_scaling": 0.2,
+        "mid_point": 4,
+        "high_point_item_level_scaling": 1,
+        "base_range": 3,
+        "base_range_instablity_scaling": 0.4,
+        "base_tag_magnitude_modifiers": {"weapon": 2},
+        "base_tag_weigth_modifiers": {},
+        "related_basic_stat": "more_generic_damage",
+        "relation": "flat_addition"
+    },
+    "increased_assault_dmg": {
+        "description": "$$% increased Assault damage",
+        "mod_weight": 5,
+        "minimum_item_lvl": 0,
+        "mid_point": 6,
+        "high_point_item_level_scaling": 1.4,
+        "base_range": 3,
+        "base_range_instablity_scaling": 0.4,
         "base_tag_magnitude_modifiers": {"assault": 2, "psi": 0.5, "tactics": 0.5},
         "base_tag_weigth_modifiers": {"assault": 2, "psi": 0.2, "tactics": 0.2},
+        "related_basic_stat": "max_HP",
+        "relation": "flat_addition"
     },
-    "flat_to_psi": {
-        "description": "+$$ to PSI skill",
+    "increased_psi_dmg": {
+        "description": "$$% increased PSI damage",
         "mod_weight": 5,
         "minimum_item_lvl": 0,
-        "mid_point": 2,
-        "high_point_item_level_scaling": 0.5,
-        "base_range": 1,
-        "base_range_instablity_scaling": 0.2,
+        "mid_point": 6,
+        "high_point_item_level_scaling": 1.4,
+        "base_range": 3,
+        "base_range_instablity_scaling": 0.4,
         "base_tag_magnitude_modifiers": {"assault": 0.5, "psi": 2, "tactics": 0.5},
         "base_tag_weigth_modifiers": {"assault": 0.2, "psi": 2, "tactics": 0.2},
+        "related_basic_stat": "max_HP",
+        "relation": "flat_addition"
     },
-    "flat_to_tactics": {
-        "description": "+$$ to Tactics skill",
+    "increased_tactics_dmg": {
+        "description": "$$% increased Assault damage",
         "mod_weight": 5,
         "minimum_item_lvl": 0,
-        "mid_point": 2,
-        "high_point_item_level_scaling": 0.5,
-        "base_range": 1,
-        "base_range_instablity_scaling": 0.2,
+        "mid_point": 6,
+        "high_point_item_level_scaling": 1.4,
+        "base_range": 3,
+        "base_range_instablity_scaling": 0.4,
         "base_tag_magnitude_modifiers": {"assault": 0.5, "psi": 0.5, "tactics": 2},
         "base_tag_weigth_modifiers": {"assault": 0.2, "psi": 0.2, "tactics": 2},
+        "related_basic_stat": "max_HP",
+        "relation": "flat_addition"
     }
 }

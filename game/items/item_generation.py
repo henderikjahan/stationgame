@@ -3,8 +3,8 @@
 
 import random
 from math import floor
-from item_bases_data import base_types
-from mod_data import item_mods
+from game.items.item_bases_data import base_types
+from game.stats.stat_data import item_mods
 
 
 def generate_item(
