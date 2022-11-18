@@ -16,9 +16,7 @@ basic_stats = {"max_HP": 50, "max_AP": 3,
                "increased_psi_dmg": 0, }
 
 # Should current hp and current ap be stored here?
-current_stats = {
-    "total_HP": {"value": 110, "statText": "110 Hit Points"}
-}
+current_stats = basic_stats
 
 
 def calculate_current_mod_totals():
@@ -68,4 +66,10 @@ def remove_item_mods(id):
     global current_mods
     new_mods = list(filter(lambda x: x["source_item_ID"] != id, current_mods))
     current_mods = new_mods
+    return current_mods
+
+
+def add_item_mods(new_mods):
+    global current_mods
+    current_mods = current_mods + new_mods
     return current_mods
