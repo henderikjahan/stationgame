@@ -121,4 +121,10 @@ boots_bases = {
     },
 }
 
-base_types = weapon_bases | boots_bases
+body_armor_bases = {}
+
+gloves_bases = {}
+
+# implant types - eye, body, brain
+
+base_types = weapon_bases | boots_bases | body_armor_bases | gloves_bases

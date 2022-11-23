@@ -21,45 +21,52 @@ current_stats = basic_stats
 
 def calculate_current_mod_totals():
     # make list of unique names in current_mods
-    current_mod_names = []
+    current_unique_mod_names = []
     for mod in current_mods:
-        if (mod["modName"] not in current_mod_names):
-            current_mod_names.append(mod["modName"])
+        if (mod["modName"] not in current_unique_mod_names):
+            current_unique_mod_names.append(mod["modName"])
 
     # go through current_mods and add all mods of the same type together
     current_total_mods = []
-    for mod_name in current_mod_names:
-        # find and total all mods in current_mods
-        current_stat = {"modName": mod_name, "value": 0}
+    for mod_name in current_unique_mod_names:
+        current_total_mod = {"modName": mod_name, "value": 0}
         for mod in current_mods:
             if mod["modName"] == mod_name:
-                current_stat["value"] += mod["value"]
-        current_total_mods.append(current_stat)
+                current_total_mod["value"] += mod["value"]
+        current_total_mods.append(current_total_mod)
 
     return current_total_mods
+
+
+def go_through_item_mods(current_total_mods, relation, original_stats, callback):
+    result = original_stats
+
+    for mod in current_total_mods:
+        mod_info = item_mods[mod["modName"]]
+
+        if "relation" not in mod_info or "related_basic_stat" not in mod_info:
+            continue
+        if mod_info["relation"] != relation:
+            continue
+        if mod_info["related_basic_stat"] not in basic_stats:
+            continue
+
+        result[mod_info["related_basic_stat"]] = callback(
+            original_stats[mod_info["related_basic_stat"]], mod["value"])
+
+    return result
 
 
 def calculate_current_stats():
     current_total_mods = calculate_current_mod_totals()
 
-    # for each current_total_mod, look for the related stat, if additive, add to base stats
-    new_flat_stats = basic_stats
-    for mod in current_total_mods:
-        mod_info = item_mods[mod["modName"]]
-        if mod_info["relation"] == "flat_addition":
-            if mod_info["related_basic_stat"] in basic_stats:
-                new_flat_stats[mod_info["related_basic_stat"]] += mod["value"]
+    new_flat_stats = go_through_item_mods(
+        current_total_mods, "flat_addition", basic_stats, lambda x, y: x + y)
 
-    # for each current_total_mod, look for the related stat, if increase, increase base amount by it
-    increased_stats = new_flat_stats
-    for mod in current_total_mods:
-        mod_info = item_mods[mod["modName"]]
-        if mod_info["relation"] == "percentage_increase":
-            if mod_info["related_basic_stat"] in basic_stats:
-                new_flat_stats[mod_info["related_basic_stat"]
-                               ] = round(new_flat_stats[mod_info["related_basic_stat"]] * (1+(mod["value"]/100)))
+    increased_stats = go_through_item_mods(
+        current_total_mods, "percentage_increase", new_flat_stats, lambda x, y: round(x*(1+(y/100))))
 
-    return (increased_stats)
+    return increased_stats
 
 
 def remove_item_mods(id):
