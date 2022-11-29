@@ -11,10 +11,7 @@ from game.player import Player
 
 class Game:
     def __init__(self):
-        self.map = MeshMap(
-            load_as_dict("assets/bam/tiles.bam"),
-            loader.load_texture("assets/images/tileset_test.png"),
-        )
+        self.map = MeshMap(load_as_dict("assets/bam/tiles.bam"))
         self.map.root.reparent_to(render)
         self.player = Player(self.map, camera=render_to_texture(render))
         self.make_celest()

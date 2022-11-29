@@ -22,9 +22,12 @@ def random_tile_frames(y):
 
 
 class MeshMap():
-    def __init__(self, tiles, texture):
+    def __init__(self, tiles):
         self.tiles = tiles
-        self.texture = texture
+        self.textures = {
+            "tileset_1": loader.load_texture("assets/images/tileset_1.png"),        
+            "propset_1": loader.load_texture("assets/images/propset_1.png"),
+        }
         self.root = NodePath("map")
         self.tilemap = BSP()
         self.start = choice(list(self.tilemap.tiles.keys()))
@@ -50,14 +53,14 @@ class MeshMap():
                 s += self.tilemap.tiles[x, y].char
             print(s)
 
-    def build_tile(self, x, y, tile_name, direction=0, frames=[]):
+    def build_tile(self, x, y, tile_name, direction=0, frames=[], texture="tileset_1"):
         room = self.rooms[self.tilemap.get_room_bordered(x, y)]
         if len(frames) > 1:
-            tile = tile_animation(self.tiles[tile_name], self.texture, frames)
+            tile = tile_animation(self.tiles[tile_name], self.textures[texture], frames)
             tile.reparent_to(room['dynamic'])
         else:
             tile = self.tiles[tile_name].copy_to(room['flat'])
-            tile_texture(tile, self.texture, *frames[0], 8)
+            tile_texture(tile, self.textures[texture], *frames[0], 8)
 
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
@@ -65,7 +68,7 @@ class MeshMap():
 
     def build_billboard(self, x, y, tiles):
         tile = tiles[x, y]
-        shape = self.build_tile(x, y, "billboard_"+tile.size, frames=[tile.uv])
+        shape = self.build_tile(x, y, "billboard_"+tile.size, frames=[tile.uv], texture="propset_1")
         shape.set_billboard_point_eye()
         shape.set_transparency(True)
         self.build_floor_ceiling(x, y)
@@ -107,7 +110,7 @@ class MeshMap():
         tile = tiles[x,y]
         shape = self.build_tile(x, y, 'doorway', d, frames=[(0,2)])
         tile.door = shape.find("**/door")
-        tile_texture(tile.door, self.texture, 5,0, 8)
+        tile_texture(tile.door, self.textures["tileset_1"], 7,6, 8)
         tile.door.wrt_reparent_to(self.root)
         self.build_floor_ceiling(x, y)
 
