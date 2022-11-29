@@ -2,7 +2,7 @@ import builtins
 from panda3d.core import Vec2, Vec3
 from panda3d.core import NodePath
 from panda3d.core import CardMaker
-
+from panda3d.core import SequenceNode
 
 def print(string):
     try:
@@ -58,22 +58,23 @@ def tile_texture(nodepath, texture, x, y, tiles_per_row):
         nodepath.set_tex_scale(texture_stage, w, h)
         nodepath.set_tex_offset(texture_stage, x*w, 1-(y*w))
 
-def tile_animation(nodepath, texture, frames=[(0,0), (1,0)], tiles_per_row=8, framerate=24):
+def tile_animation(nodepath, texture, frames=[(0,0), (1,0)], tiles_per_row=8, framerate=4):
     sequenced = NodePath(nodepath.name)
     sequence = SequenceNode(nodepath.name)
-    sequences.attach_new_node(sequence)
+    sequenced.attach_new_node(sequence)
     for frame in frames:
         new = nodepath.copy_to(sequenced)
         tile_texture(new, texture, frame[0], frame[1], tiles_per_row)
         sequence.add_child(new.node()) # WARNING: this might not copy the texture offset
+        new.detach_node()
     sequence.set_frame_rate(framerate)
     sequence.loop(True)
     return sequenced
 
 def flatten_sequence(sequences_nodepath):
-    sequences =  sequences_nodepath.get_children()
-    flattened_sequence = SequenceNode(sequence[0].name)
-    for a, animation in enumerate(sequence[0].node().get_children()):
+    sequences = sequences_nodepath.get_children()
+    flattened_sequence = SequenceNode(sequences[0].name)
+    for a, animation in enumerate(sequences[0].node().get_children()):
         for f, frame in enumerate(animation.get_child(0).get_children()):
             combined_frame = NodePath("frame " + str(f))
             for sequence in sequences:
@@ -87,7 +88,9 @@ def flatten_sequence(sequences_nodepath):
     framerate = animation.get_frame_rate()
     flattened_sequence.set_frame_rate(framerate)
     flattened_sequence.loop(True)
-    return NodePath(flattened_sequence)
+    np = sequences_nodepath.parent.attach_new_node(flattened_sequence)
+    sequences_nodepath.detach_node()
+    return np
 
 def render_to_texture(root):
     # Render to texture

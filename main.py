@@ -77,4 +77,5 @@ base.linemaker.set_thickness(1)
 base.render.set_antialias(AntialiasAttrib.MNone)
 base.printer = Printer(); base.print = base.printer.print
 base.game = Game()
+#render.ls()
 base.run()

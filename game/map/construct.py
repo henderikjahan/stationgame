@@ -2,9 +2,23 @@ from random import shuffle, randint, choice
 from panda3d.core import LVector2i, Vec2
 from panda3d.core import NodePath
 
-from game.tools import multvec2, evenvec2, is_in, rotate_mat3, tile_texture
+from game.tools import multvec2, evenvec2, is_in
+from game.tools import rotate_mat3, tile_texture, tile_animation
+from game.tools import flatten_sequence
 from .common import DIRS
 from .bsp import BSP
+
+
+def random_tile_frames(y):
+    if randint(0,1):
+        if randint(0,1):
+            frames = [(randint(0,3), y)]
+        else:
+            u = choice((4, 6))
+            frames = [(u, y), (u+1, y)]
+    else:
+        frames = [(0,y)]
+    return frames
 
 
 class MeshMap():
@@ -27,6 +41,7 @@ class MeshMap():
         self.build_map(self.tilemap.tiles)
         for key, value in self.rooms.items():
             value["flat"].flatten_strong()
+            #value["dynamic"] = flatten_sequence(value["dynamic"])
 
     def print_out(self):
         for y in range(0,32):
@@ -36,12 +51,16 @@ class MeshMap():
             print(s)
 
     def build_tile(self, x, y, tile_name, direction=0, frames=[]):
-        # TODO: if len(frames) > 1: it's an animated tile
         room = self.rooms[self.tilemap.get_room_bordered(x, y)]
-        tile = self.tiles[tile_name].copy_to(room['flat'])
+        if len(frames) > 1:
+            tile = tile_animation(self.tiles[tile_name], self.texture, frames)
+            tile.reparent_to(room['dynamic'])
+        else:
+            tile = self.tiles[tile_name].copy_to(room['flat'])
+            tile_texture(tile, self.texture, *frames[0], 8)
+
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
-        tile_texture(tile, self.texture, *frames[0], 8)
         return tile
 
     def build_billboard(self, x, y, tiles):
@@ -53,14 +72,11 @@ class MeshMap():
 
     def build_floor_ceiling(self, x, y):
         for i, name in enumerate(("ceiling", "floor")):
-            name = name+"_even" if (x+y)%2 else name+"_uneven"
-            tx = choice((0,2,3,4)) if randint(0,4) == 0 else 0
-            if (x+y)%2 and randint(0,2): tx = 1
-            tile = self.build_tile(x, y, name, frames=[(tx,4*i)])
+            tile = self.build_tile(x, y, name+"_even", frames=random_tile_frames(4*i))
 
     def build_wall(self, x, y, tile_name, direction):
-        u = randint(0,3) if tile_name == "l_none_r_none" and randint(0,1) else 0
-        tile = self.build_tile(x, y, tile_name, direction, [(u, 2)])
+        frames = random_tile_frames(2) if tile_name == "l_none_r_none" else [(0,2)]
+        tile = self.build_tile(x, y, tile_name, direction, frames)
         self.build_floor_ceiling(x, y)
 
     def build_walls(self, px, py, tiles):
