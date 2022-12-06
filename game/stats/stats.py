@@ -1,5 +1,5 @@
 
-from ..battle import move_list as move
+from ..moves import move_list as move
 
 class Stats:
     def __init__(self, statdict = {}, equipment = {}, psi = {}, basic_attack = None):

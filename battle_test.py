@@ -3,8 +3,8 @@ from game.battle import battle_gameplay as bgp
 
 # --imports--
 from game.battle import player_stat
-from game.battle import enemy_list as enemy
-from game.battle import move_list as move
+from game.enemies import enemy_list as enemy
+from game.moves import move_list as move
 from game.stats import stats
 
 # --setup player/enemy stat--

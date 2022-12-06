@@ -1,5 +1,5 @@
 import math
-from game.battle import move_list as move
+from game.moves import move_list as move
 from game.battle import status_list as status
 from game.tools import print
 

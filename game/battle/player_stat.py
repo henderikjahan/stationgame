@@ -1,4 +1,4 @@
-from . import move_list as move
+from ..moves import move_list as move
 
 # When changing the file location of this file, don't forget about the import:
 # battle_gameplay.py

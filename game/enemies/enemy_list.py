@@ -1,5 +1,5 @@
-from .battle_gameplay import EnemyBattler
-from . import move_list as move
+from ..battle.battle_gameplay import EnemyBattler
+from ..moves import move_list as move
 
 
 class BorgerBurger(EnemyBattler):
