@@ -28,17 +28,35 @@ class Battler:
         # set stats to the inputed statsdict
         # here under are the base stats
         self.stat = {
+            # HP
             "Current HP": 10,
             "Max HP": 10,
 
-            "Base Attack": 5,
-            "Physical Defense": 0,
-            "Psi Defense": 0,
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
+            "Psi": 10,
 
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
+
+            "Dodge": 10, # Avoid rage and tactical, but not psi.
+
+            "Heat Affinity": 10,
+            "Elec Affinity": 10,
+            "Data Affinity": 10,
+
+            # AP
             "Current AP": 0,
             "Temporary AP": 0,
             "Turn AP": 1,
-            "Max AP": 5
+            "Max AP": 5,
+
+            # old stats
+            "Base Attack": 5,
+            "Physical Defense": 0
         }
 
         for entry in statsdict:
@@ -86,12 +104,6 @@ class Battler:
     def deal_damage_Base(self, move_power, weakness_hit = False):
         # use etc here
         # deals damage with base attack in mind
-
-        if False:   # !depecrated design
-            if weakness_hit == True:
-                effective_multiplier = 1.2
-            else:
-                effective_multiplier = 1.0
         
         raw_damage = self.stat["Base Attack"] * move_power
 

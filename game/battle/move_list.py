@@ -82,6 +82,7 @@ class MoveBase:
 
 class Attack(MoveBase):
     def __init__(self):
+
         self.ap_cost = 1
         self.move_power = 1.0
         self.attack_type = "Something"
@@ -116,7 +117,7 @@ class Attack(MoveBase):
 
 class Fire(MoveBase):
     def __init__(self):
-        
+
         self.ap_cost = 2
         self.move_power = 2.0
         self.attack_type = "Heat"
@@ -150,6 +151,7 @@ class Fire(MoveBase):
 
 
 # -- normal functions --
+# !is unused
 
 def check_legality_target(target_battler, status_list = ["Felled"], check_for_illegality = True):
     # checks whether the target is legal based on status
