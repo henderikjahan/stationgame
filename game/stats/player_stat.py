@@ -1,9 +1,8 @@
-from ..moves import move_list as move
+from game.moves import move_list as move
 
 # When changing the file location of this file, don't forget about the import:
 # battle_gameplay.py
-# battle_test.py
-# *list updated in 27-10-2022
+# *list updated in 6-12-2022
 
 
 class PlayerStat:

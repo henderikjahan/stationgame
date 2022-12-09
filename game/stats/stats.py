@@ -1,8 +1,8 @@
 
-from ..moves import move_list as move
+from game.moves import move_list as move
 
 class Stats:
-    def __init__(self, statdict = {}, equipment = {}, psi = {}, basic_attack = None):
+    def __init__(self, statdict = {}, equipment = {}, equipped_moves = {}, basic_attack = None):
 
         # !When having thoughts about certain stats, please share!
         # base stats
@@ -51,9 +51,9 @@ class Stats:
             self.equipment[entry] = equipment[entry]
         
         #changes/add moves based on given moves
-        self.psi = {}
-        for entry in psi:
-            self.psi[entry] = psi[entry]
+        self.equipped_moves = {}
+        for entry in equipped_moves:
+            self.equipped_moves[entry] = equipped_moves[entry]
         
         # basic attack, expects a move class object
         if basic_attack == None:

@@ -198,7 +198,7 @@ class EnemyBattler(Battler):
 
 # <-- Player battler class -->
 class PlayerBattler(Battler):
-    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, psi = None, basic_attack = None, battle_ref = None):
+    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, equipped_moves = None, basic_attack = None, battle_ref = None):
 
         Battler.__init__(
             self, 
@@ -211,13 +211,13 @@ class PlayerBattler(Battler):
 
         if equipment == None:
             equipment = {}
-        if psi == None:
-            psi = {}
+        if equipped_moves == None:
+            equipped_moves = {}
         if basic_attack == None:
             basic_attack = move.Attack()
         
         self.equipment = equipment
-        self.psi = psi
+        self.equipped_moves = equipped_moves
         self.basic_attack = basic_attack
 
     def low_ap_message(self):
@@ -237,7 +237,7 @@ class BattleGameplay:
             statsdict = player_gl.stat,
             equipment = player_gl.equipment,
             battle_ref = self,
-            psi = player_gl.psi
+            equipped_moves = player_gl.equipped_moves
         )
 
         # enemy objects setup
@@ -397,7 +397,7 @@ class BattleGameplay:
         print(f"Player AP: {str_plAP}")
         if not takeninput:
             print("\n--Choose move--")
-            print("Attack (1*)| Psi | TurnPass | Exit")
+            print("Attack (1*)| Moves | TurnPass | Exit")
 
         # creating a reference for the enemies
         short_name_list = []
@@ -415,8 +415,8 @@ class BattleGameplay:
 
             case ["attack" | "a", *target]: 
                 #target is a single string in a list
-                # used_move, needs to be an 
-                used_move = self.player_battler.basic_attack.use
+                target= target[0]
+                used_move = self.player_battler.basic_attack
                 self.targeting_tool(
                     user_battler= self.player_battler,
                     enemies_list= self.enemies_list,
@@ -431,24 +431,52 @@ class BattleGameplay:
                         target_input= target
                     )
 
-            case ["psi" | "p", *target]:
-                print("choose psi")
-                # Doesn't work at the moment
-                # 31-10, busy on this
 
-                if True:
-                    used_move = self.player_battler.psi["Fire"].use
+            case ["moves" | "move" | "m", *rest_input]:
 
-                    self.targeting_tool(
-                        user_battler= self.player_battler,
-                        enemies_list= self.enemies_list,
-                        move_function= used_move,
-                        target_input= target
-                    )
-                
-                while False:
-                    self.get_player_psi()
-                    takeninput = input("Input: ")
+                # creates a new dict of the player_moves; 
+                # but with lowercase characters and shortened characters
+                dm_lower= {}
+                dm_short= {}
+                for cmove in self.player_battler.equipped_moves:
+                    dm_lower[cmove.lower()]= self.player_battler.equipped_moves[cmove]
+                    
+                    key_short = ''.join(char.lower() for char in cmove if char.isupper())
+                    dm_short[key_short]= self.player_battler.equipped_moves[cmove]
+
+                if len(rest_input) == 0:    # if only "moves" is inputted
+                    print('use "move {move name}"')
+                    print("available moves: ")
+                    for pmove in self.player_battler.equipped_moves:
+                        print("> " + pmove)
+                else:
+                    # !consider changing this in the future
+                    rinput = rest_input[0].split(maxsplit= 1)
+                    input_move = rinput[0]
+                    if len(rinput) < 2:
+                        target = None
+                    else:
+                        target = rinput[-1]
+
+                    move_dict = False
+                    if input_move in self.player_battler.equipped_moves:
+                        move_dict = self.player_battler.equipped_moves
+                    elif input_move in dm_lower:
+                        move_dict = dm_lower
+                    elif input_move in dm_short:
+                        move_dict = dm_short
+                    else:
+                        print("move not recognized")
+
+                    if move_dict:
+                        used_move = move_dict[input_move]
+                        self.targeting_tool(
+                            user_battler= self.player_battler,
+                            enemies_list= self.enemies_list,
+                            move_function= used_move,
+                            target_input= target
+                        )
+
             
             case ["turnpass" | "t" | "tp"]:
                 print("turn passed")
@@ -474,7 +502,7 @@ class BattleGameplay:
         if target_exists == False:
             return
         
-        move_function(user_battler, target_battler)
+        move_function.use(user_battler, target_battler)
 
 
     def check_target(self, enemies_list, target):
@@ -496,16 +524,13 @@ class BattleGameplay:
                 ''.join(char.lower() for char in enemy.name if char.isupper())
             )
 
-        if target[0] in short_l:
-            nimdex = short_l.index(target[0])
+        if target in short_l:
+            nimdex = short_l.index(target)
             return True, enemies_list[nimdex]
-        elif target[0] in full_l:
-            nimdex = full_l.index(target[0])
+        elif target in full_l:
+            nimdex = full_l.index(target)
             return True, enemies_list[nimdex]
         else:
             print("Target not found, check your input")
             return False, None
 
-
-    def get_player_psi(self):
-        pass

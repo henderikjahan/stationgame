@@ -6,6 +6,7 @@ from game.tools import print
 class MoveBase:
     def __init__(self):
 
+        self.name = "MoveBase"
         self.ap_cost = 0
         self.move_power = 1
         self.attack_type = "Placeholder"
@@ -83,6 +84,7 @@ class MoveBase:
 class Attack(MoveBase):
     def __init__(self):
 
+        self.name = "Attack"
         self.ap_cost = 1
         self.move_power = 1.0
         self.attack_type = "Something"
@@ -118,6 +120,7 @@ class Attack(MoveBase):
 class Fire(MoveBase):
     def __init__(self):
 
+        self.name = "Fire"
         self.ap_cost = 2
         self.move_power = 2.0
         self.attack_type = "Heat"
