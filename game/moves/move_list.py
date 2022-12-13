@@ -9,7 +9,11 @@ class MoveBase:
         self.name = "MoveBase"
         self.ap_cost = 0
         self.move_power = 1
-        self.attack_type = "Placeholder"
+        self.attack_type = "Assault"
+        self.affinity = None
+
+    def return_name(self):
+        return self.name
 
     def check_legality_target(self, target_battler, status_list = ["Felled"], check_for_illegality = True):
         # checks whether the target is legal based on status
@@ -40,7 +44,37 @@ class MoveBase:
         return False
 
     def use(self, user_battler, target_battler):
-        pass
+        # basic attack function, can be used as a generic single attack
+        # do be wary of the prints when inheriting
+        if not check_legality_target(target_battler= target_battler):
+            return False
+
+        continue_move = user_battler.reduce_self_ap(self.ap_cost)
+        # continue move is True or False, depending whether the cost can be paid
+
+        if continue_move:
+            move_power = self.move_power
+            
+            raw_damage = user_battler.deal_damage_Base(
+                attack_type= self.attack_type,
+                move_power= move_power
+                )
+            
+            # message
+            str_userbattler = str(user_battler.name)
+            str_targetbattler = str(target_battler.name)
+            print( f"{str_userbattler} attacked {str_targetbattler}!")
+
+            target_battler.take_damage(
+                raw_damage= raw_damage,
+                attack_type= self.attack_type
+                )
+
+
+        else:
+            # ap cost too low
+            str_userbattler = str(user_battler.name)
+            print( f"{str_userbattler}'s AP is too low!")
 
     def damage_single_target(self, user_battler, target_battler, move_power, attack_type= "Placeholder"):
 
@@ -52,78 +86,24 @@ class MoveBase:
             raw_damage= raw_damage
             )
 
-    def _old_weakness_check(self, target_battler, attack_type= "Placeholder"):
-        # !deprecated element
-        # applies break on target etc.
-        weakness_hit = False
-        if attack_type in target_battler.weakness:
-            weakness_hit = True
 
-        return weakness_hit
-
-    def _old_damage_single_target(self, user_battler, target_battler, move_power, attack_type= "Placeholder"):
-        # !depecrated element
-        weakness_hit = self.weakness_check(
-            target_battler= target_battler, 
-            attack_type= attack_type
-            )
-
-        raw_damage = user_battler.deal_damage_Base(
-            move_power= move_power,
-            weakness_hit= weakness_hit
-            )
-
-        target_battler.take_damage(
-            raw_damage= raw_damage
-            )
-        
-        if weakness_hit == True:
-            target_battler.apply_break_status()
-
-
-class Attack(MoveBase):
+class BaseAttackAssault(MoveBase):
     def __init__(self):
 
-        self.name = "Attack"
+        self.name = "BaseAttackAssault"
         self.ap_cost = 1
         self.move_power = 1.0
-        self.attack_type = "Something"
+        self.attack_type = "Assault"
+        self.affinity = None
 
-    def use(self, user_battler, target_battler):
-        if not check_legality_target(target_battler= target_battler):
-            return False
-
-        ap_cost = 1
-        continue_move = user_battler.reduce_self_ap(ap_cost)
-        # continue move is True or False, depending whether the cost can be paid
-
-        if continue_move:
-
-            move_power = 1.0
-            
-            raw_damage = user_battler.deal_damage_Base(move_power= move_power)
-            
-            # message
-            str_userbattler = str(user_battler.name)
-            str_targetbattler = str(target_battler.name)
-            print( f"{str_userbattler} attacked {str_targetbattler}!")
-
-            target_battler.take_damage(raw_damage= raw_damage)
-
-
-        else:
-            # ap cost too low
-            str_userbattler = str(user_battler.name)
-            print( f"{str_userbattler}'s AP is too low!")
-
-
-class Fire(MoveBase):
+class FireBall(MoveBase):
     def __init__(self):
 
         self.name = "Fire"
         self.ap_cost = 2
         self.move_power = 2.0
-        self.attack_type = "Heat"
+        self.attack_type = "Psi"
+        self.affinity = "Heat"
 
     def use(self, user_battler, target_battler):
         if not check_legality_target(target_battler= target_battler):

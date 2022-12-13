@@ -1,25 +1,43 @@
 from ..battle.battle_gameplay import EnemyBattler
 from ..moves import move_list as move
 
+# inherited from enemybattler class
 
 class BorgerBurger(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
-            "Current HP": 15,
-            "Max HP": 15,
+            # HP
+            "Current HP": 10,
+            "Max HP": 10,
 
-            "Base Attack": 5,
-            "Physical Defense": 0,
-            "Psi Defense": 0,
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
+            "Psi": 10,
 
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
+
+            "Heat Affinity": 10,
+            "Elec Affinity": 10,
+            "Data Affinity": 10,
+
+            # AP
             "Current AP": 0,
+            "Temporary AP": 0,
             "Turn AP": 1,
-            "Max AP": 5
+            "Max AP": 1,
         }
-        weakness = []
+        weakness = []   #unused
         status = None
         name = "Borger Burger"
+
+        move_dict = {
+            "Attack": move.BaseAttackAssault()
+        }
 
         EnemyBattler.__init__(
             self,
@@ -27,14 +45,15 @@ class BorgerBurger(EnemyBattler):
             weakness = weakness,
             status = status,
             name = name,
-            battle_ref = battle_ref
+            battle_ref = battle_ref,
+            move_dict= move_dict
         )
 
 
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                move.attack(
+                self.move_dict["Attack"].use(
                     user_battler= self,
                     target_battler= self.player()
                 )
@@ -45,20 +64,37 @@ class MagicalMayonaise(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
-            "Current HP": 8,
-            "Max HP": 8,
+            # HP
+            "Current HP": 10,
+            "Max HP": 10,
 
-            "Base Attack": 8,
-            "Physical Defense": 0,
-            "Psi Defense": 0,
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
+            "Psi": 10,
 
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
+
+            "Heat Affinity": 10,
+            "Elec Affinity": 10,
+            "Data Affinity": 10,
+
+            # AP
             "Current AP": 0,
+            "Temporary AP": 0,
             "Turn AP": 1,
-            "Max AP": 5
+            "Max AP": 5,
         }
         weakness = []
         status = None
         name = "Magical Mayonaise"
+
+        move_dict = {
+            "Attack": move.BaseAttackAssault()
+        }
 
         EnemyBattler.__init__(
             self,
@@ -66,14 +102,15 @@ class MagicalMayonaise(EnemyBattler):
             weakness = weakness,
             status = status,
             name = name,
-            battle_ref = battle_ref
+            battle_ref = battle_ref,
+            move_dict= move_dict
         )
 
 
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                move.attack(
+                self.move_dict["Attack"].use(
                     user_battler= self,
                     target_battler= self.player()
                 )
@@ -87,20 +124,37 @@ class Placeholder(EnemyBattler):
     def __init__(self, battle_ref):
 
         statsdict = {
-            "Current HP": 11,
-            "Max HP": 11,
+            # HP
+            "Current HP": 10,
+            "Max HP": 10,
 
-            "Base Attack": 11,
-            "Physical Defense": 11,
-            "Psi Defense": 11,
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
+            "Psi": 10,
 
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
+
+            "Heat Affinity": 10,
+            "Elec Affinity": 10,
+            "Data Affinity": 10,
+
+            # AP
             "Current AP": 0,
-            "Turn AP": 0,
-            "Max AP": 5
+            "Temporary AP": 0,
+            "Turn AP": 1,
+            "Max AP": 5,
         }
         weakness = []
         status = None
         name = "Placeholder"
+
+        move_dict = {
+            "Attack": move.BaseAttackAssault()
+        }
 
         EnemyBattler.__init__(
             self,
@@ -108,14 +162,15 @@ class Placeholder(EnemyBattler):
             weakness = weakness,
             status = status,
             name = name,
-            battle_ref = battle_ref
+            battle_ref = battle_ref,
+            move_dict= move_dict
         )
 
 
     def self_behaviour(self):
         while self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 1:
-                move.attack(
+                self.move_dict["Attack"].use(
                     user_battler= self,
                     target_battler= self.player()
                 )

@@ -8,9 +8,10 @@ from game.stats import stats
 
 # --setup player/enemy stat--
 # psi list should contain ready to use objects
+# !entries should contain NO spaces
 setup_moves = {
-    "Fire": move.Fire(),
-    "Attack": move.Attack()
+    "FireBall": move.FireBall(),
+    "AttackAssault": move.BaseAttackAssault()
 }
 
 player_gl = stats.Stats(
@@ -34,11 +35,17 @@ random_battle = bgp.BattleGameplay(
     loop= True
 )
 
+# ! 13-12-2022; 
+#   bezig met affinity
+#   bezig met damage ranges en equipment handling
+
 # to do list
 # verander attack aanpassend aan de assault, tactic en psi
     # maak een nieuwe attack voor assault en maak aanpassingen betreft dat
-# maak vorderingen in move van (player) battle_gameplay
-    # !hiermee bezig
+# voeg equipment toe en damage ranges
+# voeg status handling
+# voeg passive handling
+# pas enemy strategy toe
 
 # <-- Notes -->
 

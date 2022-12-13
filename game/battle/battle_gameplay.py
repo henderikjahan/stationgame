@@ -1,4 +1,5 @@
 import math
+import random
 from game.moves import move_list as move
 from game.battle import status_list as status
 from game.tools import print
@@ -24,6 +25,10 @@ class Battler:
         self.weakness = weakness
         self.status = status
         
+        # !temp stats, minmax are integers
+        self.weapon_attack_min = 1
+        self.weapon_attack_max = 2
+
     def set_true_stat(self, statsdict):
         # set stats to the inputed statsdict
         # here under are the base stats
@@ -91,7 +96,9 @@ class Battler:
 
     def start_of_turn(self):
         # at start of turn passives/statuses
-        
+        # triggers
+
+
         pass
 
     def end_of_turn(self):
@@ -100,19 +107,47 @@ class Battler:
 
         # at end of turn passives
 
+        # status turn reduction
 
-    def deal_damage_Base(self, move_power, weakness_hit = False):
+
+
+    def deal_damage_Base(self, move_power= 1, attack_type= None, affinity_type= None):
         # use etc here
         # deals damage with base attack in mind
-        
-        raw_damage = self.stat["Base Attack"] * move_power
 
+        # Unique cases
+        if attack_type == None:
+            raw_damage = 1 * move_power
+            return raw_damage
+        elif not attack_type in self.stat:
+            print(f"attack_type: {attack_type} not found; from deal_damage_base")
+            return 1
+        
+        # -- start actual function --
+        raw_min = self.stat[attack_type] * self.weapon_attack_min * move_power
+        raw_max = self.stat[attack_type] * self.weapon_attack_max * move_power
+
+        random.seed()
+        raw_damage = random.randint(
+            raw_min,
+            raw_max
+            )
 
         return raw_damage
     
-    def take_damage(self, raw_damage, extra_info = None):
-        # Take damage based on physical defense
-        end_damagepre = raw_damage * 100 / (100 + self.stat["Physical Defense"])
+    def take_damage(self, raw_damage= 0, attack_type= None, extra_info = None):
+        # Take damage based on known attack type
+        attdef_dict = {
+            "Assault": "Assault Defense",
+            "Tactics": "Tactical Defense",
+            "Psi": "Psi Defense"
+        }
+        if attack_type in attdef_dict:
+            def_value = self.stat[attdef_dict[attack_type]]
+            end_damagepre = raw_damage * 100 / (100 + def_value)
+        else:
+            end_damagepre = raw_damage
+            print(f"None damage perceived, no defense used; battler.take_damage")
         end_damage = math.ceil(end_damagepre)
 
         self.stat["Current HP"] -= end_damage
@@ -190,7 +225,7 @@ class EnemyBattler(Battler):
             self.move_dict = move_dict
         else:
             self.move_dict = {
-                "attack": move.Attack()
+                "Attack": move.BaseAttackAssault()
             }
 
     def player(self):
@@ -214,7 +249,7 @@ class PlayerBattler(Battler):
         if equipped_moves == None:
             equipped_moves = {}
         if basic_attack == None:
-            basic_attack = move.Attack()
+            basic_attack = move.BaseAttackAssault()
         
         self.equipment = equipment
         self.equipped_moves = equipped_moves
@@ -415,7 +450,11 @@ class BattleGameplay:
 
             case ["attack" | "a", *target]: 
                 #target is a single string in a list
-                target= target[0]
+                if len(target) > 0:
+                    target= target[0]
+                else:
+                    target= ""
+                
                 used_move = self.player_battler.basic_attack
                 self.targeting_tool(
                     user_battler= self.player_battler,

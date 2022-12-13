@@ -7,8 +7,8 @@ class Stats:
         # !When having thoughts about certain stats, please share!
         # base stats
         self.stat = {
-            "Current HP": 50,   # Current HP
-            "Max HP": 50,	# Maximum Hit points
+            "Current HP": 100,   # Current HP
+            "Max HP": 100,	# Maximum Hit points
             "HP Regen": 0,
             
             # Attack stats
@@ -46,9 +46,15 @@ class Stats:
             self.stat[entry] = statdict[entry]
         
         # changes/add equipment based on given equipment
-        self.equipment = {}
+        self.equipment = {
+            "Mainhand": "{equip_object}",
+            "Television": "{equip_object}"
+        }
         for entry in equipment:
-            self.equipment[entry] = equipment[entry]
+            if entry in self.equipment:
+                self.equipment[entry] = equipment[entry]
+            else:
+                print(f"!equipment_entry: {entry} is unused")
         
         #changes/add moves based on given moves
         self.equipped_moves = {}
@@ -57,5 +63,5 @@ class Stats:
         
         # basic attack, expects a move class object
         if basic_attack == None:
-            self.basic_attack = move.Attack()
+            self.basic_attack = move.BaseAttackAssault()
     
