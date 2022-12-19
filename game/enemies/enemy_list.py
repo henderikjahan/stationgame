@@ -21,9 +21,9 @@ class BorgerBurger(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -78,9 +78,9 @@ class MagicalMayonaise(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -138,9 +138,9 @@ class Placeholder(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,

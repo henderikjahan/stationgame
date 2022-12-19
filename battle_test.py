@@ -11,11 +11,15 @@ from game.stats import stats
 # !entries should contain NO spaces
 setup_moves = {
     "FireBall": move.FireBall(),
-    "AttackAssault": move.BaseAttackAssault()
+    "CatchMe": move.CatchMe()
+}
+
+pstatdict = {
 }
 
 player_gl = stats.Stats(
-    equipped_moves = setup_moves
+    equipped_moves = setup_moves,
+    statdict= pstatdict
     )
     # player_gl expects a "playerstat object"
 
@@ -35,8 +39,7 @@ random_battle = bgp.BattleGameplay(
     loop= True
 )
 
-# ! 13-12-2022; 
-#   bezig met affinity
+# ! 19-12-2022; 
 #   bezig met damage ranges en equipment handling
 
 # to do list

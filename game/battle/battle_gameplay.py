@@ -49,9 +49,9 @@ class Battler:
 
             "Dodge": 10, # Avoid rage and tactical, but not psi.
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -110,10 +110,11 @@ class Battler:
         # status turn reduction
 
 
-
     def deal_damage_Base(self, move_power= 1, attack_type= None, affinity_type= None):
         # use etc here
-        # deals damage with base attack in mind
+        # deals damage based on the "attack_type" in the stats
+            # attack_type needs to be "literal" the same as is noted in the stat
+            # theoretically, can even use the characters current hp in the stats
 
         # Unique cases
         if attack_type == None:
@@ -462,13 +463,6 @@ class BattleGameplay:
                     move_function= used_move,
                     target_input= target
                 )
-                if False:
-                    self.targeting_tool(
-                        user_battler= self.player_battler,
-                        enemies_list= self.enemies_list,
-                        move_function= move.attack,
-                        target_input= target
-                    )
 
 
             case ["moves" | "move" | "m", *rest_input]:

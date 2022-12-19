@@ -23,9 +23,9 @@ class Stats:
 
             "Dodge": 10, # Avoid rage and tactical, but not psi.
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.10,
+            "Elec Affinity": 1.10,
+            "Data Affinity": 1.10,
             
             "Hacking": 10,
             "Tinkering": 10,
