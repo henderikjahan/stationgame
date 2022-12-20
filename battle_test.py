@@ -21,13 +21,11 @@ player_gl = stats.Stats(
     equipped_moves = setup_moves,
     statdict= pstatdict
     )
-    # player_gl expects a "playerstat object"
+    # player_gl expects a "stats object"
 
 
 enemies = [
-    enemy.BorgerBurger,
-    enemy.BorgerBurger,
-    enemy.MagicalMayonaise
+    enemy.BorgerBurger
 ]
     # enemies expects a list of enemy classes, which are NOT objects (yet)!
 
@@ -48,7 +46,6 @@ random_battle = bgp.BattleGameplay(
 # voeg equipment toe en damage ranges
 # voeg status handling
 # voeg passive handling
-# pas enemy strategy toe
 
 # <-- Notes -->
 

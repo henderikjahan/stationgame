@@ -1,7 +1,7 @@
 import math
 import random
 from game.moves import move_list as move
-from game.battle import status_list as status
+from game.moves.status import status_list as status
 from game.tools import print
 
 
