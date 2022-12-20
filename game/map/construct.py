@@ -25,7 +25,7 @@ class MeshMap():
     def __init__(self, tiles):
         self.tiles = tiles
         self.textures = {
-            "tileset_1": loader.load_texture("assets/images/tileset_1.png"),        
+            "tileset_1": loader.load_texture("assets/images/tileset_1.png"),
             "propset_1": loader.load_texture("assets/images/propset_1.png"),
         }
         self.root = NodePath("map")
@@ -61,7 +61,6 @@ class MeshMap():
         else:
             tile = self.tiles[tile_name].copy_to(room['flat'])
             tile_texture(tile, self.textures[texture], *frames[0], 8)
-
         tile.set_pos(x, -y, 0)
         tile.set_h((-direction)*90)
         return tile

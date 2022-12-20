@@ -39,7 +39,7 @@ class TileBillboardProp(Tile):
         # TODO: randomize U
         if randint(0,1):
             self.size = "tall"
-            self.uv = 0, 6
+            self.uv = 0, 1
         else:
             self.size = "short"
-            self.uv = 0, 7
+            self.uv = 0, 2
