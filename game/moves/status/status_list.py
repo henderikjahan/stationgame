@@ -1,19 +1,19 @@
 
 
 class Status:
-    def __init__(self, name= None, turn= None, strength= 0, afflicted_object = None):
+    def __init__(self, name= None, turn= None, strength= None, afflicted_object = None):
         
         if name == None:
             name = "Unnamed"
+        if turn == None:
+            turn= None
         if strength == None:
-            strength = 0
+            strength= 0
 
         self.name = name
         self.turn = turn
         self.strength = strength
-        self.afflicted = afflicted_object
-
-        self.immediate_effect()
+        self.afflicted = afflicted_object   # add something when handling afflicted_object= None
 
     def clear_self(self):
         self.afflicted.status.pop(self.name)
@@ -21,6 +21,11 @@ class Status:
     def turn_reduction(self, minus_turns= 1, pop_status= True):
         if isinstance(self.turn, int):
             self.turn -= minus_turns
+            
+            if pop_status == False and self.turn <= 0:
+                # happens when pop_status == False; useful for specific healing effects
+                self.turn = 1
+
             if pop_status == True and self.turn <= 0:
                 self.clear_self()
 
@@ -44,9 +49,11 @@ class Status:
 
 
 class Break(Status):
+    def __init__(self, name=None, turn=None, strength=0, afflicted_object=None):
+        super().__init__(name, turn, strength, afflicted_object)
+
     def start_turn_effect(self):
         self.clear_self()
-
 
 class Felled(Status):
     def immediate_effect(self):
@@ -55,7 +62,15 @@ class Felled(Status):
 
 class Poison(Status):
     def end_turn_effect(self):
-        self.user_class.stat["Current HP"] -= self.strength
+        # message
+        name = str(self.afflicted.name)
+        damage = self.strength
+        print(f"{name} has taken {damage} poison damage")
+
+        # action
+        self.afflicted.stat["Current HP"] -= self.strength
+        
+
 
 
 

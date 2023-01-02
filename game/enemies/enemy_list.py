@@ -134,9 +134,9 @@ class SpoiledEggBoy(EnemyBattler):
             "Psi Defense": 10,
 
             # AP
-            "Current AP": 0,
+            "Current AP": 3,
             "Temporary AP": 0,
-            "Turn AP": 1,
+            "Turn AP": 2,
             "Max AP": 5,
         }
         weakness = []
@@ -160,6 +160,10 @@ class SpoiledEggBoy(EnemyBattler):
 
 
     def self_behaviour(self):
+        str_ap = str(self.stat["Current AP"])
+        print(
+            f"{self.name} AP: {str_ap}"
+        )
         if self.stat["Current AP"] >= 1:
             if self.stat["Current AP"] >= 3:
                 self.move_dict["RottenEgg"].use(

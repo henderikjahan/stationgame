@@ -1,6 +1,6 @@
 
 from .movebase import MoveBase
-
+from .status import status_list as status
 # <-- Enemy Moves -->
 
 # -- Status Moves --
@@ -31,10 +31,21 @@ class RottenEgg(MoveBase):
                 move_power= self.move_power
                 )
 
-            target_battler.take_damage(
+            result_dmg = target_battler.take_damage(
                 raw_damage= raw_damage,
                 attack_type= self.attack_type
             )
+            if (result_dmg["status"] != "Felled"    # checks whether the target is felled/dead
+                and (result_dmg["damage"] != None and result_dmg["damage"] >= 0)): # checks whether it actually took damage
+                
+                target_battler.apply_status(
+                    status.Poison(
+                        name= "Poison",
+                        turn= 3,
+                        strength= 10
+                    )
+                )
+
 
         else:
             # ap cost too low

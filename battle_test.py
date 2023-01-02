@@ -25,9 +25,11 @@ player_gl = stats.Stats(
 
 
 enemies = [
+    enemy.SpoiledEggBoy,
     enemy.BorgerBurger
 ]
     # enemies expects a list of enemy classes, which are NOT objects (yet)!
+    # consider changing this, for variable changing the objects
 
 
 # --starts battle--
@@ -37,8 +39,13 @@ random_battle = bgp.BattleGameplay(
     loop= True
 )
 
-# ! 19-12-2022; 
+# ! 19-12-2022;
 #   bezig met damage ranges en equipment handling
+
+# 2-1-2022
+    # Bezig met statuses en passives
+        # bekijk of je de felled status met de generic battler.apply_status kan gebruiken
+
 
 # to do list
 # verander attack aanpassend aan de assault, tactic en psi

@@ -86,7 +86,7 @@ class FireBall(MoveBase):
             print( f"{str_userbattler}'s AP is too low!")
 
 
-class CatchMe(MoveBase):
+class CatchMe_old(MoveBase):
     def __init__(self):
         super().__init__()
 
@@ -95,7 +95,7 @@ class CatchMe(MoveBase):
         self.move_power = 1
         self.attack_type = "Current HP"
 
-class CatchMe2(MoveBase):
+class CatchMe(MoveBase):
     def __init__(self):
         super().__init__()
 
@@ -105,4 +105,27 @@ class CatchMe2(MoveBase):
         self.attack_type = "Assault"
     
     def use(self, user_battler, target_battler):
-        return super().use(user_battler, target_battler)
+        if not self.check_legality_target(target_battler= target_battler):
+            return False
+        
+        continue_move= user_battler.reduce_self_ap(self.ap_cost)
+
+        if continue_move:
+            # message
+            str_userbattler = str(user_battler.name)
+            str_targetbattler = str(target_battler.name)
+            print( f"{str_userbattler} attacked {str_targetbattler}!")
+            
+            # damage
+            raw_damage = user_battler.stat["Current HP"]
+            
+            target_battler.take_damage(
+                raw_damage= raw_damage,
+                attack_type= self.attack_type
+                )
+
+
+        else:
+            # ap cost too low
+            str_userbattler = str(user_battler.name)
+            print( f"{str_userbattler}'s AP is too low!")
