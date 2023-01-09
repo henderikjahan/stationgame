@@ -11,21 +11,25 @@ from game.stats import stats
 # !entries should contain NO spaces
 setup_moves = {
     "FireBall": move.FireBall(),
-    "AttackAssault": move.BaseAttackAssault()
+    "CatchMe": move.CatchMe()
+}
+
+pstatdict = {
 }
 
 player_gl = stats.Stats(
-    equipped_moves = setup_moves
+    equipped_moves = setup_moves,
+    statdict= pstatdict
     )
-    # player_gl expects a "playerstat object"
+    # player_gl expects a "stats object"
 
 
 enemies = [
-    enemy.BorgerBurger,
-    enemy.BorgerBurger,
-    enemy.MagicalMayonaise
+    enemy.SpoiledEggBoy,
+    enemy.BorgerBurger
 ]
     # enemies expects a list of enemy classes, which are NOT objects (yet)!
+    # consider changing this, for variable changing the objects
 
 
 # --starts battle--
@@ -35,9 +39,13 @@ random_battle = bgp.BattleGameplay(
     loop= True
 )
 
-# ! 13-12-2022; 
-#   bezig met affinity
+# ! 19-12-2022;
 #   bezig met damage ranges en equipment handling
+
+# 2-1-2022
+    # Bezig met statuses en passives
+        # bekijk of je de felled status met de generic battler.apply_status kan gebruiken
+
 
 # to do list
 # verander attack aanpassend aan de assault, tactic en psi
@@ -45,7 +53,6 @@ random_battle = bgp.BattleGameplay(
 # voeg equipment toe en damage ranges
 # voeg status handling
 # voeg passive handling
-# pas enemy strategy toe
 
 # <-- Notes -->
 

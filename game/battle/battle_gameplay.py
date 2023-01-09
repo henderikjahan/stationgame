@@ -1,7 +1,7 @@
 import math
 import random
 from game.moves import move_list as move
-from game.battle import status_list as status
+from game.moves.status import status_list as status
 from game.tools import print
 
 
@@ -49,9 +49,9 @@ class Battler:
 
             "Dodge": 10, # Avoid rage and tactical, but not psi.
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -69,7 +69,8 @@ class Battler:
 
     def start_of_battle(self):
         # set AP
-        self.stat["Current AP"] = self.stat["Turn AP"]
+        if self.stat["Current AP"] == 0:
+            self.stat["Current AP"] = self.stat["Turn AP"]
         if self.stat["Current AP"] > self.stat["Max AP"]:
             self.stat["Current AP"] = self.stat["Max AP"]
 
@@ -95,11 +96,13 @@ class Battler:
         self.stat["Temporary AP"] += AP
 
     def start_of_turn(self):
-        # at start of turn passives/statuses
-        # triggers
+        # at start of turn passives
+        
 
+        # at start of turn statuses
+        for current_status in self.status:
+            self.status[current_status].start_turn_effect()
 
-        pass
 
     def end_of_turn(self):
         # AP
@@ -107,13 +110,26 @@ class Battler:
 
         # at end of turn passives
 
+
+        # at end of turn statuses
+        for current_status in self.status:
+            self.status[current_status].end_turn_effect()
+
         # status turn reduction
+    
+        status_list= []   # a list of strings of the status_dict
+        for x in self.status:
+            status_list.append(x)
+        for current_status in status_list:  # size changing plannen
+            self.status[current_status].turn_reduction()
 
 
 
     def deal_damage_Base(self, move_power= 1, attack_type= None, affinity_type= None):
         # use etc here
-        # deals damage with base attack in mind
+        # deals damage based on the "attack_type" in the stats
+            # attack_type needs to be "literal" the same as is noted in the stat
+            # theoretically, can even use the characters current hp in the stats
 
         # Unique cases
         if attack_type == None:
@@ -136,6 +152,13 @@ class Battler:
         return raw_damage
     
     def take_damage(self, raw_damage= 0, attack_type= None, extra_info = None):
+        # return values; usefull when moves need to know certain information
+        return_dict= {
+            "damage": None,
+            "success": True,
+            "status": None
+        }
+
         # Take damage based on known attack type
         attdef_dict = {
             "Assault": "Assault Defense",
@@ -153,6 +176,8 @@ class Battler:
         self.stat["Current HP"] -= end_damage
         if self.stat["Current HP"] < 0:
             self.stat["Current HP"] = 0
+        
+        return_dict["damage"]= end_damage   # return_dict update
 
         # message about taking damage
         str_selfname = str(self.name)
@@ -162,10 +187,44 @@ class Battler:
         # checks whether it's felled
         if self.stat["Current HP"] <= 0.0:
             self.apply_felled_status()
+            return_dict["status"]= "Felled"
 
-        return end_damage   # Returns resulting damage
+        return return_dict   # Returns a dict with "maybe" usefull information
 
-    def apply_break_status(self):
+    def apply_status(self, status_object, land_chance= None):
+        # rolls for landing status and applies status
+            # use land_chance = None for guaranteed landing status etc
+
+        if land_chance == None: # skip rolling if land_chance == None
+            pass
+        else:
+            # rolls for chance
+            random.seed()
+            rolled_int= random.randint(1, 100)
+            # chance manipulation
+            status_resistance= 0    #add some kind of passive check here
+            land_chance -= status_resistance
+
+        if land_chance != None and not land_chance <= rolled_int:
+            # when it misses
+            pass
+        
+        else:
+            # when it lands
+            # message
+            status_name= str(status_object.name)
+            str_selfname = str(self.name)
+            str_statusname= status_name
+            print(f"{str_selfname} has been afflicted with {str_statusname}!")
+
+            # when it lands
+            self.status[str(status_object.name)]= status_object # creates a new reference in the battler's status dict
+            status_object.afflicted= self    # assigns the battler in the status object
+
+            status_object.immediate_effect()    # triggers the immediate effect
+
+
+    def apply_break_status(self):   # old gameplay code
         str_selfname = str(self.name)
         print(f"{str_selfname} has been breaked!")
 
@@ -175,6 +234,10 @@ class Battler:
             strength= 1,
             afflicted_object= self
         )
+
+        # immediate effect
+        used_status= self.status["Break"]
+        used_status.immediate_effect()
 
     def apply_felled_status(self):
         str_selfname = str(self.name)
@@ -186,6 +249,10 @@ class Battler:
             strength= 1,
             afflicted_object= self
         )
+
+        # immediate effect
+        used_status= self.status["Felled"]
+        used_status.immediate_effect()
 
         if self.battle_ref != None:
             self.battle_ref.check_victory()
@@ -430,6 +497,13 @@ class BattleGameplay:
         str_plAP = str(self.player_battler.stat["Current AP"])
         print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
         print(f"Player AP: {str_plAP}")
+
+        for x in self.player_battler.status:    
+            # !temporary status check; add a proper self status check
+            name_status= str(x)
+            turnsleft_status= str(self.player_battler.status[x].turn)
+            print(f"{name_status}: {turnsleft_status} turns left")
+        
         if not takeninput:
             print("\n--Choose move--")
             print("Attack (1*)| Moves | TurnPass | Exit")
@@ -462,13 +536,6 @@ class BattleGameplay:
                     move_function= used_move,
                     target_input= target
                 )
-                if False:
-                    self.targeting_tool(
-                        user_battler= self.player_battler,
-                        enemies_list= self.enemies_list,
-                        move_function= move.attack,
-                        target_input= target
-                    )
 
 
             case ["moves" | "move" | "m", *rest_input]:

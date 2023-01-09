@@ -21,9 +21,9 @@ class BorgerBurger(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -59,7 +59,6 @@ class BorgerBurger(EnemyBattler):
                 )
 
 
-
 class MagicalMayonaise(EnemyBattler):
     def __init__(self, battle_ref):
 
@@ -78,9 +77,9 @@ class MagicalMayonaise(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
@@ -116,6 +115,67 @@ class MagicalMayonaise(EnemyBattler):
                 )
 
 
+class SpoiledEggBoy(EnemyBattler):
+    def __init__(self, battle_ref):
+
+        statsdict = {
+            # HP
+            "Current HP": 20,
+            "Max HP": 20,
+
+            # Attack stats
+            "Assault": 10,
+            "Tactics": 10,
+            "Psi": 10,
+
+            # Defense stats, damageReceived = 100/(100+defense)
+            "Assault Defense": 10,
+            "Tactical Defense": 10,
+            "Psi Defense": 10,
+
+            # AP
+            "Current AP": 3,
+            "Temporary AP": 0,
+            "Turn AP": 2,
+            "Max AP": 5,
+        }
+        weakness = []
+        status = None
+        name = "Spoiled Egg Boy"
+
+        move_dict = {
+            "Attack": move.BaseAttackAssault(),
+            "RottenEgg": move.RottenEgg()
+        }
+
+        EnemyBattler.__init__(
+            self,
+            statsdict = statsdict,
+            weakness = weakness,
+            status = status,
+            name = name,
+            battle_ref = battle_ref,
+            move_dict= move_dict
+        )
+
+
+    def self_behaviour(self):
+        str_ap = str(self.stat["Current AP"])
+        print(
+            f"{self.name} AP: {str_ap}"
+        )
+        if self.stat["Current AP"] >= 1:
+            if self.stat["Current AP"] >= 3:
+                self.move_dict["RottenEgg"].use(
+                    user_battler= self,
+                    target_battler= self.player()
+                )
+            else:
+                self.move_dict["Attack"].use(
+                    user_battler= self,
+                    target_battler= self.player()
+                )
+            
 
 
 
@@ -138,9 +198,9 @@ class Placeholder(EnemyBattler):
             "Tactical Defense": 10,
             "Psi Defense": 10,
 
-            "Heat Affinity": 10,
-            "Elec Affinity": 10,
-            "Data Affinity": 10,
+            "Heat Affinity": 1.0,
+            "Elec Affinity": 1.0,
+            "Data Affinity": 1.0,
 
             # AP
             "Current AP": 0,
