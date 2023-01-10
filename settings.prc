@@ -1,4 +1,5 @@
 window-title StationGame
+icon-filename icon.ico
 win-size 1280 720
 framebuffer-srgb 0
 
