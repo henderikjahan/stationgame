@@ -13,7 +13,7 @@ class BaseAttackAssault(MoveBase):
         self.name = "BaseAttackAssault"
         self.ap_cost = 1
         self.move_power = 1.0
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
         self.affinity = None
 
 
@@ -24,7 +24,7 @@ class BaseAttackTactics(MoveBase):
         self.name = "BaseAttackAssault"
         self.ap_cost = 1
         self.move_power = 1.0
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
         self.affinity = None
 
         self.standard_attribute()
@@ -36,7 +36,7 @@ class BaseAttackTactics(MoveBase):
         self.name = "BaseAttackAssault"
         self.ap_cost = 1
         self.move_power = 1.0
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
         self.affinity = None
 
 # -- Attack Moves --
@@ -46,7 +46,7 @@ class FireBall(MoveBase):
         self.name = "Fire"
         self.ap_cost = 2
         self.move_power = 2.0
-        self.attack_type = "Psi"
+        self.attack_type = "psi"
         self.affinity = "Heat Affinity"
 
 
@@ -93,7 +93,7 @@ class CatchMe_old(MoveBase):
         self.name = "CatchMe"
         self.ap_cost = 2
         self.move_power = 1
-        self.attack_type = "Current HP"
+        self.attack_type = "HP_current"
 
 class CatchMe(MoveBase):
     def __init__(self):
@@ -102,7 +102,7 @@ class CatchMe(MoveBase):
         self.name = "CatchMe"
         self.ap_cost = 2
         self.move_power = 1
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
     
     def use(self, user_battler, target_battler):
         if not self.check_legality_target(target_battler= target_battler):
@@ -117,7 +117,7 @@ class CatchMe(MoveBase):
             print( f"{str_userbattler} attacked {str_targetbattler}!")
             
             # damage
-            raw_damage = user_battler.stat["Current HP"]
+            raw_damage = user_battler.stat["HP_current"]
             
             target_battler.take_damage(
                 raw_damage= raw_damage,

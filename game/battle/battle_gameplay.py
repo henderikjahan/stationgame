@@ -100,7 +100,7 @@ class Battler:
         # Take damage based on known attack type
         attdef_dict = {
             "assault": "assault defense",
-            "tactics": "tactical defense",
+            "tactics": "tactics defense",
             "psi": "psi defense"
         }
         if attack_type in attdef_dict:

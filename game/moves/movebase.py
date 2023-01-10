@@ -9,7 +9,7 @@ class MoveBase:
         self.name = "MoveBase"
         self.ap_cost = 1
         self.move_power = 1
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
         self.affinity = None
 
     def return_name(self):

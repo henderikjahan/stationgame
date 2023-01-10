@@ -10,7 +10,7 @@ class RottenEgg(MoveBase):
         self.name = "rotten egg"
         self.ap_cost = 3
         self.move_power = 0.1
-        self.attack_type = "Tactics"
+        self.attack_type = "tactics"
     
     def use(self, user_battler, target_battler):
         if not self.check_legality_target(target_battler= target_battler):
