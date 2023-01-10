@@ -1,7 +1,6 @@
 # --sys.path.append --
-if False:
-    import sys
-    sys.path.append(".")
+import sys
+sys.path.append(".")
 
 
 # --imports Gameplay--
