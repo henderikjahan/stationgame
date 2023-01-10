@@ -7,7 +7,7 @@ from .status import status_list as status
 class RottenEgg(MoveBase):
     def __init__(self):
         super().__init__()
-        self.name = "RottenEgg"
+        self.name = "rotten egg"
         self.ap_cost = 3
         self.move_power = 0.1
         self.attack_type = "Tactics"

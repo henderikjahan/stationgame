@@ -1,108 +1,47 @@
 import math
 import random
-from game.moves import move_list as move
-from game.moves.status import status_list as status
 from game.tools import print
 
 
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
 class Battler:
-    def __init__(self, statsdict = None, weakness = None, status = None, name = None, battle_ref = None):
+    def __init__(self, character):
+        self.character = character
+
+        self.name = self.character.name
+        self.stat = self.character.stats.current_stat
+        self.status = self.character.stats.status
         
-        if name == None:
-            name = "Unnamed"
-        if statsdict == None:
-            statsdict = {}
-        if weakness == None:
-            weakness = []
-        if status == None:
-            status = {}
-
-        self.battle_ref = battle_ref
-        self.name = name
-        self.set_true_stat(statsdict)
-        self.weakness = weakness
-        self.status = status
-        
-        # !temp stats, minmax are integers
-        self.weapon_attack_min = 1
-        self.weapon_attack_max = 2
-
-    def set_true_stat(self, statsdict):
-        # set stats to the inputed statsdict
-        # here under are the base stats
-        self.stat = {
-            # HP
-            "Current HP": 10,
-            "Max HP": 10,
-
-            # Attack stats
-            "Assault": 10,
-            "Tactics": 10,
-            "Psi": 10,
-
-            # Defense stats, damageReceived = 100/(100+defense)
-            "Assault Defense": 10,
-            "Tactical Defense": 10,
-            "Psi Defense": 10,
-
-            "Dodge": 10, # Avoid rage and tactical, but not psi.
-
-            "Heat Affinity": 1.0,
-            "Elec Affinity": 1.0,
-            "Data Affinity": 1.0,
-
-            # AP
-            "Current AP": 0,
-            "Temporary AP": 0,
-            "Turn AP": 1,
-            "Max AP": 5,
-
-            # old stats
-            "Base Attack": 5,
-            "Physical Defense": 0
-        }
-
-        for entry in statsdict:
-            self.stat[entry] = statsdict[entry]
-
     def start_of_battle(self):
-        # set AP
-        if self.stat["Current AP"] == 0:
-            self.stat["Current AP"] = self.stat["Turn AP"]
-        if self.stat["Current AP"] > self.stat["Max AP"]:
-            self.stat["Current AP"] = self.stat["Max AP"]
-
-        # at start of battle passives
-
-        pass
+        if self.stat["AP_current"] == 0:
+            self.stat["AP_current"] = self.stat["AP_regen"]
+        if self.stat["AP_current"] > self.stat["AP_max"]:
+            self.stat["AP_current"] = self.stat["AP_max"]
 
     def gain_turn_AP(self):
         # checks whether the character is felled
-        if "Felled" in self.status:
+        if "felled" in self.status:
             return  # return ends the function prematurely, before the turn AP gain
 
         # AP
-        self.stat["Current AP"] += self.stat["Turn AP"]
-        if self.stat["Current AP"] > self.stat["Max AP"]:
-            self.stat["Current AP"] = self.stat["Max AP"]
+        self.stat["AP_current"] += self.stat["AP_regen"]
+        if self.stat["AP_current"] > self.stat["AP_max"]:
+            self.stat["AP_current"] = self.stat["AP_max"]
 
     def gain_temporary_AP(self, AP= 1):
-        mst = self.stat
-        if AP < (mst["Max AP"] - mst["Current AP"]):
-            AP = (mst["Max AP"] - mst["Current AP"])
-
-        self.stat["Temporary AP"] += AP
+        # FIXME: need system to handle temporary stats instead
+        mst = self.stats.stat
+        if AP < (mst["AP_max"] - mst["AP_current"]):
+            AP = (mst["AP_max"] - mst["AP_current"])
+        self.stat["AP_temp"] += AP
 
     def start_of_turn(self):
         # at start of turn passives
         
-
         # at start of turn statuses
         for current_status in self.status:
             self.status[current_status].start_turn_effect()
-
 
     def end_of_turn(self):
         # AP
@@ -116,13 +55,12 @@ class Battler:
             self.status[current_status].end_turn_effect()
 
         # status turn reduction
-    
+
         status_list= []   # a list of strings of the status_dict
         for x in self.status:
             status_list.append(x)
         for current_status in status_list:  # size changing plannen
             self.status[current_status].turn_reduction()
-
 
 
     def deal_damage_Base(self, move_power= 1, attack_type= None, affinity_type= None):
@@ -138,10 +76,10 @@ class Battler:
         elif not attack_type in self.stat:
             print(f"attack_type: {attack_type} not found; from deal_damage_base")
             return 1
-        
+
         # -- start actual function --
-        raw_min = self.stat[attack_type] * self.weapon_attack_min * move_power
-        raw_max = self.stat[attack_type] * self.weapon_attack_max * move_power
+        raw_min = self.stat[attack_type] * 1 * move_power
+        raw_max = self.stat[attack_type] * 1 * move_power
 
         random.seed()
         raw_damage = random.randint(
@@ -150,7 +88,7 @@ class Battler:
             )
 
         return raw_damage
-    
+
     def take_damage(self, raw_damage= 0, attack_type= None, extra_info = None):
         # return values; usefull when moves need to know certain information
         return_dict= {
@@ -161,9 +99,9 @@ class Battler:
 
         # Take damage based on known attack type
         attdef_dict = {
-            "Assault": "Assault Defense",
-            "Tactics": "Tactical Defense",
-            "Psi": "Psi Defense"
+            "assault": "assault defense",
+            "tactics": "tactical defense",
+            "psi": "psi defense"
         }
         if attack_type in attdef_dict:
             def_value = self.stat[attdef_dict[attack_type]]
@@ -173,10 +111,10 @@ class Battler:
             print(f"None damage perceived, no defense used; battler.take_damage")
         end_damage = math.ceil(end_damagepre)
 
-        self.stat["Current HP"] -= end_damage
-        if self.stat["Current HP"] < 0:
-            self.stat["Current HP"] = 0
-        
+        self.stat["HP_current"] -= end_damage
+        if self.stat["HP_current"] < 0:
+            self.stat["HP_current"] = 0
+
         return_dict["damage"]= end_damage   # return_dict update
 
         # message about taking damage
@@ -185,9 +123,9 @@ class Battler:
         print(f"{str_selfname} has taken {str_enddamage} damage!")
 
         # checks whether it's felled
-        if self.stat["Current HP"] <= 0.0:
+        if self.stat["HP_current"] <= 0.0:
             self.apply_felled_status()
-            return_dict["status"]= "Felled"
+            return_dict["status"]= "felled"
 
         return return_dict   # Returns a dict with "maybe" usefull information
 
@@ -208,7 +146,7 @@ class Battler:
         if land_chance != None and not land_chance <= rolled_int:
             # when it misses
             pass
-        
+
         else:
             # when it lands
             # message
@@ -243,24 +181,22 @@ class Battler:
         str_selfname = str(self.name)
         print(f"{str_selfname} has been felled!")
 
-        self.status["Felled"] = status.Felled(
-            name= "Felled",
+        self.status["felled"] = status.Felled(
+            name= "felled",
             turn= None,
             strength= 1,
             afflicted_object= self
         )
 
         # immediate effect
-        used_status= self.status["Felled"]
+        used_status= self.status["felled"]
         used_status.immediate_effect()
 
-        if self.battle_ref != None:
-            self.battle_ref.check_victory()
 
     def check_ap_cost(self, cost = 1):
         # mainly usefull for enemies for checking what's the best option
         # returns True and False depending on the cost versus current AP
-        if self.stat["Current AP"] < cost:
+        if self.stat["AP_current"] < cost:
             return False
         else:
             return True
@@ -268,11 +204,11 @@ class Battler:
     def reduce_self_ap(self, cost = 1):
         # checks and reduce the current ap of 'self'
         # returns True and False depending on the cost versus current AP
-        
-        if self.stat["Current AP"] < cost:
+
+        if self.stat["AP_current"] < cost:
             return False
         else:
-            self.stat["Current AP"] -= cost
+            self.stat["AP_current"] -= cost
             return True
 
     def self_behaviour(self):
@@ -284,43 +220,15 @@ class Battler:
 
 # <-- Enemy Battler class -->
 class EnemyBattler(Battler):
-    def __init__(self, statsdict=None, weakness=None, status=None, name=None, battle_ref=None, move_dict=None):
-        super().__init__(statsdict, weakness, status, name, battle_ref)
+    def __init__(self, character):
+        super().__init__(character)
 
-        # setup of move_list
-        if isinstance(move_dict, dict):
-            self.move_dict = move_dict
-        else:
-            self.move_dict = {
-                "Attack": move.BaseAttackAssault()
-            }
-
-    def player(self):
-        return self.battle_ref.player_battler
 
 # <-- Player battler class -->
 class PlayerBattler(Battler):
-    def __init__(self, statsdict = None, weakness = None, status = None, equipment = None, equipped_moves = None, basic_attack = None, battle_ref = None):
-
-        Battler.__init__(
-            self, 
-            statsdict = statsdict, 
-            weakness = weakness, 
-            status = status,
-            name = "Player",
-            battle_ref= battle_ref
-        )
-
-        if equipment == None:
-            equipment = {}
-        if equipped_moves == None:
-            equipped_moves = {}
-        if basic_attack == None:
-            basic_attack = move.BaseAttackAssault()
-        
-        self.equipment = equipment
-        self.equipped_moves = equipped_moves
-        self.basic_attack = basic_attack
+    def __init__(self, character):
+        super().__init__(character)
+        self.basic_attack = self.character.get_basic_attack()
 
     def low_ap_message(self):
         str_selfname = str(self.name)
@@ -329,28 +237,11 @@ class PlayerBattler(Battler):
         )
 
 
-
 # <-- battle class -->
 class BattleGameplay:
-    def __init__(self, player_gl, enemies_data, loop=False):
-    
-        # --Variable Setup--
-        self.player_battler = PlayerBattler(
-            statsdict = player_gl.stat,
-            equipment = player_gl.equipment,
-            battle_ref = self,
-            equipped_moves = player_gl.equipped_moves
-        )
-
-        # enemy objects setup
-        self.enemies_list = []
-
-        for enemy_data in enemies_data:
-            item = enemy_data(
-                battle_ref= self
-            )
-            self.enemies_list.append(item)
-        
+    def __init__(self, player, enemies, loop=False):
+        self.player_battler = PlayerBattler(player)
+        self.enemies_list = [EnemyBattler(enemy()) for enemy in enemies]
         self.rename_enemy_duplicates()
 
         self.turn = 1
@@ -361,7 +252,21 @@ class BattleGameplay:
         self.start_of_battle()
         if loop:
             self.battle_loop()
-
+            
+    def start_of_battle(self):
+        print("\nStart Battle\n")
+        # Start of battle handling per battler
+        self.player_battler.start_of_battle()
+        for enemy_battler in self.enemies_list:
+            enemy_battler.start_of_battle()
+            
+    def battle_loop(self):
+        while True:
+            self.battle_turn()
+            if self.exit_battle == True:
+                print("battle exited")
+                break
+        print("end of battle")
 
     def rename_enemy_duplicates(self):
         seen_names = []
@@ -375,7 +280,6 @@ class BattleGameplay:
                 pass
             else:
                 seen_names.append(name)
-
 
     def rename_enemy_duplicates(self):
         # renames all duplicates in a list of enemy_objects
@@ -404,27 +308,13 @@ class BattleGameplay:
                     dupes_dic[name] = dupes_dic[name] + 1
                     enemy.name = name + " " + alphabet[dupes_dic[name]]
 
-
-    def battle_loop(self):
-
-        while True:
-
-            self.battle_turn()
-
-            if self.exit_battle == True:
-                print("battle exited")
-                break
-        
-        print("end of battle")
-
-
     def check_victory(self):
         # checks whether the battle can be ended when either party is fully felled
         player = self.player_battler
         enemies = self.enemies_list
 
         # checks player for felled status
-        if "Felled" in player.status:
+        if "felled" in player.status:
             self.exit_battle = True
             self.results = "lose"
             print("\nThe Player's been felled!")
@@ -433,7 +323,7 @@ class BattleGameplay:
         # checks all enemies for felled status
         felled_count = 0
         for enemy in enemies:
-            if "Felled" in enemy.status:
+            if "felled" in enemy.status:
                 felled_count += 1
 
         if felled_count == len(enemies):
@@ -441,14 +331,6 @@ class BattleGameplay:
             self.results = "win"
             print("\nAll enemies has been felled!")
             return
-
-
-    def start_of_battle(self):
-        print("\nStart Battle\n")
-        # Start of battle handling per battler
-        self.player_battler.start_of_battle()
-        for enemy_battler in self.enemies_list:
-            enemy_battler.start_of_battle()
 
     def battle_turn(self, takeninput=None):
         # --Start of Turn--
@@ -467,7 +349,6 @@ class BattleGameplay:
                 return  # return is used, so that enemy doesn't get a turn
         self.player_battler.end_of_turn()
 
-
         # --Enemy Turn--
         print("\n--Enemy's Turn--")
         for enemy_battler in self.enemies_list:
@@ -480,30 +361,28 @@ class BattleGameplay:
         # --End of turn--
         self.turn += 1
 
-
     def player_turn(self, takeninput=None):
-
         # <Status Check>
         print("")
         print_output = ""
         for enemy_battler in self.enemies_list:
             str_enemy = str(enemy_battler.name)
-            str_eHP = str(enemy_battler.stat["Current HP"])
+            str_eHP = str(enemy_battler.stat["HP_current"])
             print_output += f"{str_enemy} HP: {str_eHP}   "
         print(print_output)
 
-        str_plCHP = str(self.player_battler.stat["Current HP"])
-        str_plMHP = str(self.player_battler.stat["Max HP"])
-        str_plAP = str(self.player_battler.stat["Current AP"])
+        str_plCHP = str(self.player_battler.stat["HP_current"])
+        str_plMHP = str(self.player_battler.stat["HP_max"])
+        str_plAP = str(self.player_battler.stat["HP_current"])
         print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
         print(f"Player AP: {str_plAP}")
 
-        for x in self.player_battler.status:    
+        for x in self.player_battler.status:
             # !temporary status check; add a proper self status check
             name_status= str(x)
             turnsleft_status= str(self.player_battler.status[x].turn)
             print(f"{name_status}: {turnsleft_status} turns left")
-        
+
         if not takeninput:
             print("\n--Choose move--")
             print("Attack (1*)| Moves | TurnPass | Exit")
@@ -515,20 +394,20 @@ class BattleGameplay:
 
         if not takeninput:
             takeninput = input(">Input: ").lower()
-        
+
         match takeninput.split(sep= ' ', maxsplit= 1):
-            
+
             case ["exit" | "e"]:
                 self.exit_battle = True
                 return False
 
-            case ["attack" | "a", *target]: 
+            case ["attack" | "a", *target]:
                 #target is a single string in a list
                 if len(target) > 0:
                     target= target[0]
                 else:
                     target= ""
-                
+
                 used_move = self.player_battler.basic_attack
                 self.targeting_tool(
                     user_battler= self.player_battler,
@@ -540,13 +419,13 @@ class BattleGameplay:
 
             case ["moves" | "move" | "m", *rest_input]:
 
-                # creates a new dict of the player_moves; 
+                # creates a new dict of the player_moves;
                 # but with lowercase characters and shortened characters
                 dm_lower= {}
                 dm_short= {}
                 for cmove in self.player_battler.equipped_moves:
                     dm_lower[cmove.lower()]= self.player_battler.equipped_moves[cmove]
-                    
+
                     key_short = ''.join(char.lower() for char in cmove if char.isupper())
                     dm_short[key_short]= self.player_battler.equipped_moves[cmove]
 
@@ -583,21 +462,21 @@ class BattleGameplay:
                             target_input= target
                         )
 
-            
+
             case ["turnpass" | "t" | "tp"]:
                 print("turn passed")
                 return False
 
             case _:
                 print("Input not recognized")
-        
+
         return True
 
 
     def enemy_turn(self, enemy_battler):
         # --Enemy Turn--
-        enemy_battler.self_behaviour()
-        
+        enemy_battler.character.battle_behaviour(enemy_battler, self.player_battler)
+
 
     def targeting_tool(self, user_battler, enemies_list, move_function, target_input = None):
         # targeting tool used by player battler, requires moves
@@ -607,20 +486,20 @@ class BattleGameplay:
             )
         if target_exists == False:
             return
-        
+
         move_function.use(user_battler, target_battler)
 
 
     def check_target(self, enemies_list, target):
         # returns true or false depending whether the target is legal
         # and also returns a reference of the legal target
-        
+
         # target is a list with a single string
 
         if target == None or len(target) == 0:
         # returns the first target, if target is an empty list
             return True, enemies_list[0]
-        
+
         # Creates 2 lists: full name and shortened name
         full_l = []
         short_l = []

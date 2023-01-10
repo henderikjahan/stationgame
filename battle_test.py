@@ -2,41 +2,35 @@
 from game.battle import battle_gameplay as bgp
 
 # --imports--
-from game.enemies import enemy_list as enemy
+from game.character import enemies as enemy
+from game.character.character import Player
 from game.moves import move_list as move
-from game.stats import stats
+from game.stats.stats import CharacterStats
 
 # --setup player/enemy stat--
 # psi list should contain ready to use objects
 # !entries should contain NO spaces
+# moves should be determined by Character equipment.
 setup_moves = {
     "FireBall": move.FireBall(),
     "CatchMe": move.CatchMe()
 }
 
-pstatdict = {
-}
-
-player_gl = stats.Stats(
-    equipped_moves = setup_moves,
-    statdict= pstatdict
-    )
-    # player_gl expects a "stats object"
-
+player = Player()
 
 enemies = [
     enemy.SpoiledEggBoy,
-    enemy.BorgerBurger
+    enemy.BorgerBurger,
 ]
-    # enemies expects a list of enemy classes, which are NOT objects (yet)!
+    # enemies expects a list of Enemy character classes, which are NOT instantiated (yet)!
     # consider changing this, for variable changing the objects
 
 
 # --starts battle--
 random_battle = bgp.BattleGameplay(
-    player_gl= player_gl,
-    enemies_data= enemies,
-    loop= True
+    player = player,
+    enemies = enemies,
+    loop = True
 )
 
 # ! 19-12-2022;

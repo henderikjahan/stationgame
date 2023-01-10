@@ -4,9 +4,9 @@ from panda3d.core import Fog
 
 from game.tools import load_as_dict
 from game.tools import render_to_texture
-from game.items.items import ItemGui
+#from game.items.items import ItemGui
 from game.map.construct import MeshMap
-from game.player import Player
+from game.character.character import Player
 
 
 class Game:

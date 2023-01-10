@@ -57,7 +57,7 @@ class Break(Status):
 
 class Felled(Status):
     def immediate_effect(self):
-        self.afflicted.stat["Current AP"] = 0
+        self.afflicted.stat["AP_current"] = 0
 
 
 class Poison(Status):
@@ -68,7 +68,7 @@ class Poison(Status):
         print(f"{name} has taken {damage} poison damage")
 
         # action
-        self.afflicted.stat["Current HP"] -= self.strength
+        self.afflicted.stat["HP_current"] -= self.strength
         
 
 
