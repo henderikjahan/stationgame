@@ -1,3 +1,9 @@
+# --sys.path.append --
+if False:
+    import sys
+    sys.path.append(".")
+
+
 # --imports Gameplay--
 from game.battle import battle_gameplay as bgp
 
