@@ -1,6 +1,5 @@
 import math
 import random
-from game.tools import print
 
 
 # <-- general battler class -->
