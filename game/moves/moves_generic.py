@@ -1,5 +1,4 @@
 from setuptools import Command
-from game.tools import print
 from .movebase import MoveBase
 
 

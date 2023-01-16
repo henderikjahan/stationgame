@@ -1,7 +1,7 @@
 import math
 import random
-from game.tools import print
 from game.moves.status import status_list as status
+
 
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers

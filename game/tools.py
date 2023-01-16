@@ -4,11 +4,14 @@ from panda3d.core import NodePath
 from panda3d.core import CardMaker
 from panda3d.core import SequenceNode
 
-def print(string):
+
+def gprint(string, **kwargs):
     try:
         base.print(string)
+        print(string, **kwargs)
     except NameError:
-        builtins.print(string)
+        print(string, **kwargs)
+builtins.gprint = gprint
 
 def load_as_dict(filename):
     child_dict = {}
