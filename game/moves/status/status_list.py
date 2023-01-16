@@ -78,9 +78,6 @@ class Felled(Status):
     def immediate_effect(self):
         self.afflicted.stat["AP_current"] = 0
 
-        if self.afflicted.battle_ref != None:
-            self.afflicted.battle_ref.check_victory()
-
 
 class Poison(Status):
     def end_turn_effect(self):

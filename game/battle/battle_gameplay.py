@@ -1,7 +1,7 @@
 import math
 import random
 from game.tools import print
-
+from game.moves.status import status_list as status
 
 # <-- general battler class -->
 # For editing stats and mechanics which affects all battlers
@@ -12,6 +12,8 @@ class Battler:
         self.name = self.character.name
         self.stat = self.character.stats.current_stat
         self.status = self.character.stats.status
+        self.equipped_moves = self.character.moves
+
         
     def start_of_battle(self):
         if self.stat["AP_current"] == 0:
@@ -308,7 +310,7 @@ class BattleGameplay:
                     dupes_dic[name] = dupes_dic[name] + 1
                     enemy.name = name + " " + alphabet[dupes_dic[name]]
 
-    def check_victory(self):
+    def check_endbattleflag(self):
         # checks whether the battle can be ended when either party is fully felled
         player = self.player_battler
         enemies = self.enemies_list
@@ -373,7 +375,7 @@ class BattleGameplay:
 
         str_plCHP = str(self.player_battler.stat["HP_current"])
         str_plMHP = str(self.player_battler.stat["HP_max"])
-        str_plAP = str(self.player_battler.stat["HP_current"])
+        str_plAP = str(self.player_battler.stat["AP_current"])
         print(f"\nPlayer HP: {str_plCHP}/{str_plMHP}")
         print(f"Player AP: {str_plAP}")
 
@@ -470,13 +472,19 @@ class BattleGameplay:
             case _:
                 print("Input not recognized")
 
+        # --End Battle Flag Check--
+        self.check_endbattleflag()
         return True
 
 
     def enemy_turn(self, enemy_battler):
+        # !add more complexity to this:
+            # check whether the enemy_battlers "want" to end their turn
         # --Enemy Turn--
         enemy_battler.character.battle_behaviour(enemy_battler, self.player_battler)
 
+        # --End Battle Flag Check--
+        self.check_endbattleflag()
 
     def targeting_tool(self, user_battler, enemies_list, move_function, target_input = None):
         # targeting tool used by player battler, requires moves

@@ -1,4 +1,3 @@
-#from . import move_list as move  # fix this
 from game.stats.stat_data import item_mods
 
 
@@ -23,7 +22,7 @@ class CharacterStats:
             "generic defense": 1,
             "assault defense": 1,
             "tactics defense": 1,
-            "psi  defense": 1,
+            "psi defense": 1,
 
             "increased_generic_dmg": 0,
             "increased_assault_dmg": 0,
