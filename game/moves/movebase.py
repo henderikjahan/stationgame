@@ -1,6 +1,5 @@
 from setuptools import Command
 
-
 # <--- Base Class --->
 class MoveBase:
     def __init__(self):
@@ -8,11 +7,23 @@ class MoveBase:
         self.name = "MoveBase"
         self.ap_cost = 1
         self.move_power = 1
-        self.attack_type = "Assault"
+        self.attack_type = "assault"
         self.affinity = None
 
     def return_name(self):
         return self.name
+
+    def move_info(self):
+        # used for getting information of a move with 'move_info.py'
+            # more usefull when the move_libraries get too large
+        retpro = {
+            "name": self.name,
+            "ap_cost": self.ap_cost,
+            "move_power": self.move_power,
+            "attack_type": self.attack_type,
+            "affinity": self.affinity
+            }
+        return retpro
 
     def check_legality_target(self, target_battler, status_list = ["Felled"], check_for_illegality = True):
         # checks whether the target is legal based on status

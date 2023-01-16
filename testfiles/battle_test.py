@@ -1,3 +1,8 @@
+# --sys.path.append --
+import sys
+sys.path.append(".")
+
+
 # --imports Gameplay--
 from game.battle import battle_gameplay as bgp
 
@@ -8,15 +13,36 @@ from game.moves import move_list as move
 from game.stats.stats import CharacterStats
 
 # --setup player/enemy stat--
-# psi list should contain ready to use objects
-# !entries should contain NO spaces
 # moves should be determined by Character equipment.
 setup_moves = {
     "FireBall": move.FireBall(),
     "CatchMe": move.CatchMe()
 }
+playerstat2 = {
+    "HP_current": 100,  # Current HP
+    "HP_max": 100,  # Maximum Hit points
+    "HP_regen": 0,
+
+    "AP_current": 0,
+    "AP_max": 3,  # Maximum Action points, which can be banked
+    "AP_regen": 3,  # Turn Action points, determines the amount of AP the battlers can gain per turn at start
+
+    "generic": 0,
+    "assault": 10,
+    "tactics": 10,
+    "psi": 10,
+
+    "generic defense": 1,
+    "assault defense": 1,
+    "tactics defense": 1,
+    "psi defense": 1,
+}
 
 player = Player()
+
+player.moves |= setup_moves
+player.stats.current_stat |= playerstat2
+
 
 enemies = [
     enemy.SpoiledEggBoy,

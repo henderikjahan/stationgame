@@ -1,0 +1,8 @@
+
+Add the lines between ### in your test files to 
+ execute your test files from this folder
+
+###
+import sys
+sys.path.append(".")
+###

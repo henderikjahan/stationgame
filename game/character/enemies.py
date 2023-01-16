@@ -63,7 +63,7 @@ class SpoiledEggBoy(Enemy):
 
             # AP
             "AP_current": 3,
-            "AP_turn": 2,
+            "AP_regen": 2,
             "AP_max": 5,
         }
         self.moves |= {"rotten egg" : move.RottenEgg()}
@@ -72,9 +72,6 @@ class SpoiledEggBoy(Enemy):
     def battle_behaviour(self, user_battler, target_battler):
         stats = self.stats.current_stat
         str_ap = str(stats["AP_current"])
-        print(
-            f"{self.name} AP: {str_ap}"
-        )
         moves = self.moves
         if stats["AP_current"] >= 1:
             if stats["AP_current"] >= 3 and "rotten egg" in moves:
