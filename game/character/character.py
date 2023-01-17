@@ -11,7 +11,7 @@ class Character:
         # TODO: Retrieve moves from equipment!
         self.moves = {"attack": move.BaseAttackAssault()}
         self.stats = CharacterStats(self)
-        
+
     def battle_behavior(self, user, target):
         pass
 
@@ -46,8 +46,6 @@ class Player(Character):
         return move.BaseAttackAssault()
 
     def update(self, task):
-        if not base.sequencer.running:
-            if self.walker.movement():
-                self.counter += 1
+        self.walker.update()
         return task.cont
 
