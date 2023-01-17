@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="Badge Blaster",
+    name="station",
     options={
         'build_apps': {
             'include_patterns': [
@@ -10,6 +10,7 @@ setup(
                 'assets/fonts/*.otf',
                 'assets/images/*.png',
                 'assets/images/enemies/*.png',
+                'libsunvox/*/*',
                 'README.md',
                 'keybindings.config',
                 'settings.prc',

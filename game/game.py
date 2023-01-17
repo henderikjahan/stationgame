@@ -4,6 +4,7 @@ from panda3d.core import Fog
 
 from game.tools import load_as_dict
 from game.tools import render_to_texture
+from game.audio.sunvoxer import Sunvoxer
 #from game.items.items import ItemGui
 from game.map.construct import MeshMap
 from game.character.character import Player
@@ -11,6 +12,7 @@ from game.character.character import Player
 
 class Game:
     def __init__(self):
+        self.sunvoxer = Sunvoxer("friendly.sunvox")
         self.map = MeshMap(load_as_dict("assets/bam/tiles.bam"))
         self.map.root.reparent_to(render)
         self.player = Player(self.map, camera=render_to_texture(render))
