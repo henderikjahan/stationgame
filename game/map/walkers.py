@@ -52,24 +52,45 @@ class CameraWalker(TileWalker):
         self.light.set_z(1)
         self.light.node().set_attenuation(Vec3(0.05,0.05,0.05))
         render.set_light(self.light)
-
         self.map_screen = MapScreen(tilemap, camera)
+        self.next_move = None
+
+    def update(self):
+        return self.movement()
+
+    def queue_input(self):
+        context = base.device_listener.read_context("player")
+        turn_movement = ["turnright", "turnleft"]
+        move_movement = ["moveforward", "movebackward"]
+        for i in turn_movement:
+            if context[i]:
+                self.next_move = i
+                return
+        if not base.sequencer.running and not self.next_move in turn_movement:
+            for i in move_movement:
+                if context[i]:
+                    self.next_move = i
+
 
     def movement(self):
-        context = base.device_listener.read_context("player")
-        if context["turnright"]:
+        self.queue_input()
+        if base.sequencer.running or not self.next_move:
+            return
+
+        if self.next_move == "turnright":
             self.rotate(1)
             x,y,z = self.root.get_pos()
             self.map_screen.update(x, -y, self.direction)
-        elif context["turnleft"]:
+        elif self.next_move == "turnleft":
             self.rotate(-1)
             x,y,z = self.root.get_pos()
             self.map_screen.update(x, -y, self.direction)
-        elif context["moveforward"]:
+        elif self.next_move == "moveforward":
             pos = self.forward()
             if pos:
                 x,y,z = pos
                 self.map_screen.update(x, -y, self.direction)
         else:
-            return False
+            return
+        self.next_move = None
         return True
