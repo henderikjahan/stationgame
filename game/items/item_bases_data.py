@@ -1,0 +1,130 @@
+weapon_bases = {
+    "tier_1_PSI_weapon": {
+        "base_name": "tier_1_psi_weapon",
+        "minimum_item_lvl": 0,
+        "minimum_instability_lvl": 0,
+        "base_weight": 1,
+        "names": ["Rickety PSI glove", "Rusted PSI glove"],
+        "attack_category": "psi",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "psi"],
+    },
+    "tier_2_PSI_weapon": {
+        "base_name": "tier_2_psi_weapon",
+        "minimum_item_lvl": 10,
+        "minimum_instability_lvl": 0,
+        "base_weight": 2,
+        "names": ["Power Glove", "PSI glove"],
+        "attack_category": "psi",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "psi"],
+    },
+    "tier_3_PSI_weapon": {
+        "base_name": "tier_3_psi_weapon",
+        "minimum_item_lvl": 20,
+        "minimum_instability_lvl": 0,
+        "base_weight": 2,
+        "names": ["PSI Manipulator"],
+        "attack_category": "psi",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "psi"],
+    },
+
+    "tier_1_assault_weapon": {
+        "base_name": "tier_1_assault_weapon",
+        "minimum_item_lvl": 0,
+        "minimum_instability_lvl": 0,
+        "base_weight": 1,
+        "names": ["Rusty Shank", "Baseball Bat", "Broken Baton"],
+        "attack_category": "assault",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "assault"],
+    },
+    "tier_2_assault_weapon": {
+        "base_name": "tier_2_assault_weapon",
+        "minimum_item_lvl": 10,
+        "minimum_instability_lvl": 0,
+        "base_weight": 2,
+        "names": ["Stun Baton"],
+        "attack_category": "assault",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "assault"],
+    },
+    "tier_3_assault_weapon": {
+        "base_name": "tier_3_assault_weapon",
+        "minimum_item_lvl": 20,
+        "minimum_instability_lvl": 0,
+        "base_weight": 2,
+        "names": ["Plasma Poker"],
+        "attack_category": "assault",
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["weapon", "assault"],
+    },
+
+    "tier_1_insanity_weapon": {
+        "base_name": "tier_1_insanity_weapon",
+        "minimum_item_lvl": 0,
+        "minimum_instability_lvl": 10,
+        "base_weight": 1,
+        "names": ["Dart Gun"],
+        "attack_category": "tactics",
+        "implicit_mods": [],
+        "images": [],
+        "mod_multiplier": 1.2,
+        "instability_multiplier": 1.3,
+        "base_tags": ["weapon", "tactics"],
+    },
+    "tier_2_insanity_weapon": {
+        "base_name": "tier_2_insanity_weapon",
+        "minimum_item_lvl": 10,
+        "minimum_instability_lvl": 20,
+        "base_weight": 1,
+        "names": ["Rubber Chicken"],
+        "attack_category": "assault",
+        "implicit_mods": [],
+        "images": [],
+        "mod_multiplier": 1.4,
+        "instability_multiplier": 1.4,
+        "base_tags": ["weapon", "assault"],
+    },
+    "tier_3_insanity_weapon": {
+        "baseName": "tier_3_insanity_weapon",
+        "minimum_item_lvl": 10,
+        "minimum_instability_lvl": 30,
+        "base_weight": 2,
+        "names": ["Mysterious Orb"],
+        "attack_category": "psi",
+        "implicit_mods": [],
+        "images": [],
+        "mod_multiplier": 1.5,
+        "instability_multiplier": 1.5,
+        "base_tags": ["weapon", "psi"],
+    },
+}
+
+boots_bases = {
+    "tier_1_boots": {
+        "baseName": "tier_1_boots",
+        "minimum_item_lvl": 0,
+        "minimum_instability_lvl": 0,
+        "base_weight": 1,
+        "names": ["Leather Boots"],
+        "implicit_mods": [],
+        "images": [],
+        "base_tags": ["armor", "boots"],
+    },
+}
+
+body_armor_bases = {}
+
+gloves_bases = {}
+
+# implant types - eye, body, brain
+
+base_types = weapon_bases | boots_bases | body_armor_bases | gloves_bases
