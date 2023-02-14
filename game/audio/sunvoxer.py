@@ -7,7 +7,7 @@ import platform
 print(platform.system(), platform.machine())
 SYSTEM = platform.system().lower()
 MACHINE = platform.machine().lower()
-LIBPATH = "../../../libsunvox/{}/{}/".format(SYSTEM, MACHINE)
+LIBPATH = "/../../libsunvox/{}/{}/".format(SYSTEM, MACHINE)
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 EXTENTION = ".so"
