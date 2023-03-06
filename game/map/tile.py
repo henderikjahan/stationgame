@@ -20,6 +20,7 @@ class TileSpace(Tile):
 class TileDoor(Tile):
     def __init__(self):
         self.char = "+"
+        self.type = "center"
         self.is_open = False
         self.solid = True
         self.door = None
@@ -29,7 +30,7 @@ class TileDoor(Tile):
         self.solid = False
         start_pos = self.door.get_pos()
         next_pos = start_pos + Vec3(0,0,2)
-        base.sequencer.add(self.door.posInterval(duration, next_pos, startPos=start_pos))
+        self.door.play(self.type+"_open")
 
 
 class TileBillboardProp(Tile):

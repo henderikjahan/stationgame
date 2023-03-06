@@ -2,6 +2,8 @@ from random import shuffle, randint, choice
 from panda3d.core import LVector2i, Vec2
 from panda3d.core import NodePath
 
+from direct.actor.Actor import Actor
+
 from game.tools import multvec2, evenvec2, is_in
 from game.tools import rotate_mat3, tile_texture, tile_animation
 from game.tools import flatten_sequence
@@ -25,8 +27,8 @@ class MeshMap():
     def __init__(self, tiles):
         self.tiles = tiles
         self.textures = {
-            "tileset_1": loader.load_texture("assets/images/tileset_1.png"),
-            "propset_1": loader.load_texture("assets/images/propset_1.png"),
+            "tileset_1": loader.load_texture("assets/images/Purple-metal-tileset1.png"),
+            "propset_1": loader.load_texture("assets/images/Purple-metal-propset1.png"),
         }
         self.root = NodePath("map")
         self.tilemap = BSP()
@@ -108,9 +110,15 @@ class MeshMap():
         d = 1 if tiles[x,y-1].char == "#" else 0
         tile = tiles[x,y]
         shape = self.build_tile(x, y, 'doorway', d, frames=[(0,2)])
-        tile.door = shape.find("**/door")
-        tile_texture(tile.door, self.textures["tileset_1"], 7,6, 8)
-        tile.door.wrt_reparent_to(self.root)
+        shape.find("**/door_straight").detach_node()
+        tile.type = "center"
+        door_shape = shape.find("**/door_"+tile.type)
+        door_shape.detach_node()
+        tile.door = Actor(door_shape)
+        tile_texture(tile.door, self.textures["tileset_1"], 7, 6, 8)
+        tile.door.reparent_to(self.root)
+        tile.door.set_pos(shape.get_pos())
+        tile.door.set_h(shape.get_h()+90)
         self.build_floor_ceiling(x, y)
 
     def build_map(self, tiles):
