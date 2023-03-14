@@ -1,0 +1,92 @@
+Stats:
+    HP_current: 1
+    HP_max: 1
+    HP_regen: 0
+
+    AP_current: 0
+    AP_max: 0
+    AP_regen: 0
+
+    generic: 0
+    assault: 0
+    tactics: 0
+    psi: 0
+
+
+Enemies:
+    Borger Burger:
+        Stats:
+            HP_current: 10
+            HP_max: 10
+            AP_regen: 1
+            AP_max: 1
+        Moves:
+            - Basic assault attack
+    Magical Mayonaise:
+        Stats:
+            HP_current: 10
+            HP_max: 10
+            AP_regen: 1
+            AP_max: 5
+        Moves:
+            - Basic tactics attack
+        Image: magicalmayonaise
+
+    Spiderbat:
+        Stats:
+            HP_current: 10
+            HP_max: 20
+            AP_current: 3
+            AP_max: 5
+            AP_regen: 2
+        Moves:
+            - Rotten Egg
+        Strategy:
+            - Costly moves
+
+Moves:
+    Basic assault attack:
+        AP_cost: 1
+        power: 1
+        type: assault
+    Basic tactics attack:
+        AP_cost: 1
+        power: 1
+        type: assault
+    Basic psi attack:
+        AP_cost: 1
+        power: 1
+        type: psi
+    Catch me:
+        AP_cost: 2
+        power: 1
+        type: assault
+    Fire ball:
+        AP_cost: 2
+        power: 2
+        type: psi
+        affinity: heat
+        effect: burn
+    Rotten Egg:
+        AP_cost: 3
+        power: 0.1
+        type: tactics
+        effect: light poison
+        effect_chance: 1
+
+
+Effects:
+    dead:
+        duration: inf
+        strength: inf
+        style: constant
+
+    incapacitated:
+        duration: inf
+        strength: inf
+        style: constant
+
+    light poison:
+        duration: 3
+        style: end turn
+        HP_current: -3

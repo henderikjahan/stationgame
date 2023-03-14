@@ -39,6 +39,15 @@ class TileWalker:
         base.sequencer.add(self.root.quatInterval(duration, next_hpr, startHpr=start_hpr, blendType='easeOut'))
         return next_hpr
 
+class AutoWalker:
+    def __init__(self, tilemap):
+        self.tilemap = tilemap
+        self.root = NodePath("auto walker")
+        self.direction = 0
+
+    def update(self):
+        pass
+
 
 class CameraWalker(TileWalker):
     def __init__(self, tilemap, camera):
@@ -55,8 +64,9 @@ class CameraWalker(TileWalker):
         self.map_screen = MapScreen(tilemap, camera)
         self.next_move = None
 
-    def update(self):
-        return self.movement()
+    def update(self, task):
+        self.movement()
+        return task.cont
 
     def queue_input(self):
         context = base.device_listener.read_context("player")

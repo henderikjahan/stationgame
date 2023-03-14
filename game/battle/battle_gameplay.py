@@ -14,7 +14,7 @@ class Battler:
         self.status = self.character.stats.status
         self.equipped_moves = self.character.moves
 
-        
+
     def start_of_battle(self):
         if self.stat["AP_current"] == 0:
             self.stat["AP_current"] = self.stat["AP_regen"]
@@ -40,7 +40,7 @@ class Battler:
 
     def start_of_turn(self):
         # at start of turn passives
-        
+
         # at start of turn statuses
         for current_status in self.status:
             self.status[current_status].start_turn_effect()
@@ -254,14 +254,14 @@ class BattleGameplay:
         self.start_of_battle()
         if loop:
             self.battle_loop()
-            
+
     def start_of_battle(self):
         print("\nStart Battle\n")
         # Start of battle handling per battler
         self.player_battler.start_of_battle()
         for enemy_battler in self.enemies_list:
             enemy_battler.start_of_battle()
-            
+
     def battle_loop(self):
         while True:
             self.battle_turn()

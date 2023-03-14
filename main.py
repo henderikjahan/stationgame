@@ -1,3 +1,4 @@
+import builtins
 import sys
 
 from panda3d.core import loadPrcFile
@@ -13,6 +14,7 @@ from keybindings.device_listener import SinglePlayerAssigner
 
 from game import Game
 from game.tools import load_as_dict
+from game.data import DataMgr
 
 
 class Sequencer():
@@ -76,6 +78,7 @@ base.linemaker = LineSegs("line")
 base.linemaker.set_thickness(1)
 base.render.set_antialias(AntialiasAttrib.MNone)
 base.printer = Printer(); base.print = base.printer.print
+builtins.data_mgr = base.data_mgr = DataMgr()
 base.game = Game()
 #render.ls()
 base.run()
