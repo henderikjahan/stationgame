@@ -71,7 +71,6 @@ class CameraWalker(TileWalker):
                 if context[i]:
                     self.next_move = i
 
-
     def movement(self):
         self.queue_input()
         if base.sequencer.running or not self.next_move:
