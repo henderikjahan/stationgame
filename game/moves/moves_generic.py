@@ -1,4 +1,3 @@
-from setuptools import Command
 from .movebase import MoveBase
 
 
@@ -26,7 +25,7 @@ class BaseAttackTactics(MoveBase):
         self.attack_type = "assault"
         self.affinity = None
 
-        
+
 class BaseAttackPsi(MoveBase):
     def __init__(self):
         super().__init__()

@@ -1,5 +1,3 @@
-from setuptools import Command
-
 # <--- Base Class --->
 class MoveBase:
     def __init__(self):
@@ -45,7 +43,7 @@ class MoveBase:
             for status in status_list:
                 if status in target_battler.status:
                     return True
-            
+
             str_targetbattler = str(target_battler)
             print( f"{str_targetbattler} is not afflicted with anything!")
             return False
@@ -67,13 +65,13 @@ class MoveBase:
             str_userbattler = str(user_battler.name)
             str_targetbattler = str(target_battler.name)
             print( f"{str_userbattler} attacked {str_targetbattler}!")
-            
+
             # damage
             raw_damage = user_battler.deal_damage_Base(
                 attack_type= self.attack_type,
                 move_power= self.move_power
                 )
-            
+
             target_battler.take_damage(
                 raw_damage= raw_damage,
                 attack_type= self.attack_type
@@ -87,14 +85,14 @@ class MoveBase:
 
     def apply_status(self, user_battler= None, target_battler= None, status_object= None):
         # ? add in checks?
-        
+
         # message
         str_target = str(target_battler.name)
         print(f"{str_target} has been ")
 
     def calc_affinity(self, user_battler= None, target_battler= None):
         # returns a multiplier for related affinity
-        
+
         # when affinity is not defined in the move
         if self.affinity == None:
             print(f"{self.name}.apply_affinity used with None affinity")
@@ -106,16 +104,16 @@ class MoveBase:
             user_var = 1
         else:
             user_var = user_battler.stat[affinity]
-        
+
         if target_battler == None or affinity not in target_battler.stat:
             target_var = 1
         else:
             target_var = target_battler.stat[affinity]
-        
+
 
         multiplier = user_var / target_var
         return multiplier
-        
+
 
     def damage_single_target(self, user_battler, target_battler, move_power, attack_type= "Placeholder"):
         # old
