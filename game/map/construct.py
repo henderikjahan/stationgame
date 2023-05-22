@@ -133,6 +133,8 @@ class MeshMap():
                 else:
                     self.build_floor_ceiling(x, y)
 
+                tiles[x,y].set(tiles, (x,y))
+
 
 if __name__ == "__main__":
     from panda3d.core import DirectionalLight

@@ -1,10 +1,21 @@
 from random import randint
 from panda3d.core import Vec3
 
+
 class Tile():
     def __init__(self):
         self.char = "#"
         self.solid = True
+        self.g_score = float('inf')
+        self.f_score = float('inf')
+
+    def set(self, grid, pos):
+        self.pos = pos
+        self.neighbors = []
+        for y in range(-1,1):
+            for x in range(-1,1):
+                if not (x, y) == pos:
+                    self.neighbors.append(grid[x,y])
 
 
 class TileWall(Tile):

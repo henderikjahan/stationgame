@@ -177,7 +177,6 @@ class BSP:
                         start = room
                         nearest = other
                         start_group = group
-
         self.carve_corridor_between_rooms(start, nearest)
 
         # Merge the groups
