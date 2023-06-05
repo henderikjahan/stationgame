@@ -12,11 +12,10 @@ class Tile():
     def set(self, grid, pos):
         self.pos = pos
         self.neighbors = []
-        for y in range(-1,1):
-            for x in range(-1,1):
-                if not (x, y) == pos:
-                    self.neighbors.append(grid[x,y])
-
+        for dx, dy in [(-1,-1),(0,-1),(1,-1),(-1,0), (1,0), (-1,1),(0,1),(1,1)]:
+            x, y = pos[0]+dx, pos[1]+dy
+            if x >= 0 and y >= 0:
+                self.neighbors.append(grid[x,y])
 
 class TileWall(Tile):
     pass

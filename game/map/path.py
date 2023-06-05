@@ -2,7 +2,7 @@ from math import sqrt, pow
 
 
 def distance(a, b):
-    return sqrt(pow(a.pos[0], b.pos[0], 2)+pow(a.pos[0], b.pos[1], 2))
+    return sqrt(pow(a.pos[0]-b.pos[0], 2)+pow(a.pos[0]-b.pos[1], 2))
 
 def h_score(start, end):
     dist = end.pos[0] - start.pos[0], end.pos[1] - start.pos[1]
@@ -27,6 +27,7 @@ def reconstruct_path(grid, came_from, current):
     return path
 
 def a_star(grid, start, end):
+    print(start.pos, end.pos)
     open_set = []
     closed_set = []
     came_from = {}
@@ -37,19 +38,22 @@ def a_star(grid, start, end):
         current = lowest_f_score(open_set)
         open_set.remove(current)
         closed_set.append(current)
-        print(current.pos)
         if current == end:
+            print("found path yay!, reconstructing")
             return reconstruct_path(grid, came_from, current)
         for neighbor in current.neighbors:
             if neighbor in closed_set or neighbor.solid:
                 continue
+
             if grid[neighbor.pos[0], current.pos[1]].solid and grid[current.pos[0], neighbor.pos[1]].solid:
                 continue
+
             tent_g_score = current.g_score + distance(current, neighbor)
             if neighbor not in open_set:
                 open_set.append(neighbor)
             elif tent_g_score > neighbor.g_score:
                 continue
+
             came_from[neighbor.pos[0], neighbor.pos[1]] = current
             neighbor.g_score = tent_g_score
             neighbor.f_score = neighbor.g_score + h_score(neighbor, end)

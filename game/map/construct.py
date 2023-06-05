@@ -24,15 +24,16 @@ def random_tile_frames(y):
 
 
 class MeshMap():
-    def __init__(self, tiles):
+    def __init__(self, tiles, texture_loc="assets/images/"):
         self.tiles = tiles
         self.textures = {
-            "tileset_1": loader.load_texture("assets/images/Purple-metal-tileset1.png"),
-            "propset_1": loader.load_texture("assets/images/Purple-metal-propset1.png"),
+            "tileset_1": loader.load_texture(texture_loc+"Purple-metal-tileset1.png"),
+            "propset_1": loader.load_texture(texture_loc+"Purple-metal-propset1.png"),
         }
         self.root = NodePath("map")
         self.tilemap = BSP()
         self.start = choice(list(self.tilemap.tiles.keys()))
+        self.floors = []
 
         self.rooms = {}
         for room in self.tilemap.rooms+[None]:
@@ -132,8 +133,9 @@ class MeshMap():
                     self.build_billboard(x, y, tiles)
                 else:
                     self.build_floor_ceiling(x, y)
-
-                tiles[x,y].set(tiles, (x,y))
+                    self.floors.append(tiles[x,y])
+                if not tiles[x,y].char == "#":
+                    tiles[x,y].set(tiles, (x,y))
 
 
 if __name__ == "__main__":
