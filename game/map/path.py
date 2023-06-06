@@ -26,8 +26,10 @@ def reconstruct_path(grid, came_from, current):
         path.insert(0, current)
     return path
 
-def a_star(grid, start, end):
-    print(start.pos, end.pos)
+def a_star(grid, pos_a, pos_b):
+    start = grid[pos_a]
+    end = grid[pos_b]
+
     open_set = []
     closed_set = []
     came_from = {}

@@ -1,3 +1,4 @@
+from random import choice
 from panda3d.core import DirectionalLight
 from panda3d.core import CardMaker
 from panda3d.core import Fog
@@ -7,7 +8,9 @@ from game.tools import render_to_texture
 from game.audio.sunvoxer import Sunvoxer
 #from game.items.items import ItemGui
 from game.map.construct import MeshMap
-from game.character.character import Player
+from game.map.walkers import CameraWalker
+from game.map.walkers import AIWalker
+from game.map.walkers import TurnManager
 
 
 class Game:
@@ -15,8 +18,14 @@ class Game:
         self.sunvoxer = Sunvoxer("friendly.sunvox")
         self.map = MeshMap(load_as_dict("assets/bam/tiles.bam"))
         self.map.root.reparent_to(render)
-        self.player = Player(self.map, camera=render_to_texture(render))
-        self.make_celest()
+
+        self.player = CameraWalker(self.map, camera=base.cam) #render_to_texture(render))
+        self.player.set_pos(*choice(self.map.floors).pos)
+        self.enemy = AIWalker(self.map, self.player)
+        self.enemy.set_pos(*choice(self.map.floors).pos)
+        self.turnman = TurnManager([self.player, self.enemy])
+
+        #self.make_celest()
 
     def make_celest(self):
         celest = render.attach_new_node('celest')
