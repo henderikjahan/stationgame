@@ -3,26 +3,41 @@
 
 import random
 from math import floor
-from game.items.item_bases_data import base_types
+from game.items.item_bases_data import item_bases
 from game.stats.stat_data import item_mods
+from typing import List, Dict
 
 
 def generate_item(
     item_level: int = 0,
     instability: int = 0,
+    weigh_base_tags: Dict[str, int] | None = None,
+    # weigh_mod_tags: Dict[str, int] | None = None,
+    # force_base_tag: str | None = None,
+    # force_base_type: str | None = None,
 ):
+    def calculate_weight_multiplier(item_base_tags: Dict[str, int], weigh_base_tags: Dict[str, int] | None = None):
+        if weigh_base_tags == None:
+            return 1.0
+        multiplier = 1.0
+        for tag in item_base_tags:
+            if tag in weigh_base_tags:
+                multiplier *= weigh_base_tags[tag]
+        return multiplier
+
     def select_base_type():
-        eligible_base_types = {k: v for (k, v) in base_types.items() if (
-            ("minimumItemLvl" not in v or v["minimumItemLvl"] <= item_level)
-            and ("minimumInstabilityLvl" not in v or v["minimumInstabilityLvl"] <= instability)
+        # if base tag is existant in base tags, multiply weight value by each tag
+        eligible_base_types = {k: item_base for (k, item_base) in item_bases.items() if (
+            ("minimumItemLvl" not in item_base or item_base["minimumItemLvl"] <= item_level)
+            and ("minimumInstabilityLvl" not in item_base or item_base["minimumInstabilityLvl"] <= instability)
         )}
         ordered_eligible_base_types_names = list(eligible_base_types)
-        ordered_eligible_base_types_weights = [base_types[x]["base_weight"]
+        ordered_eligible_base_types_weights = [item_bases[x]["base_weight"] * calculate_weight_multiplier(weigh_base_tags, item_bases[x]["base_tags"])
                                                for x in ordered_eligible_base_types_names]
         selectedBaseType = random.choices(
             ordered_eligible_base_types_names, weights=ordered_eligible_base_types_weights, k=1)[0]
 
-        return base_types[selectedBaseType]
+        return item_bases[selectedBaseType]
 
     def roll_mod(
         mod: any,
@@ -33,17 +48,17 @@ def generate_item(
         if "instability_multiplier" in base_type:
             instability = instability * base_type["instability_multiplier"]
 
-        range = mod["base_range"] + \
-            (mod["base_range_instablity_scaling"] * instability)
+        range = mod["base_range"] +
+        (mod["base_range_instablity_scaling"] * instability)
         lowpoint = mod["mid_point"] - range
-        highpoint = mod["mid_point"] + range + \
-            (mod["high_point_item_level_scaling"] * item_level)
+        highpoint = mod["mid_point"] + range +
+        (mod["high_point_item_level_scaling"] * item_level)
 
         mod_roll = floor(random.uniform(lowpoint, highpoint))
         for magnitude_modifier_tag in mod["base_tag_magnitude_modifiers"]:
             if magnitude_modifier_tag in base_type["base_tags"]:
-                mod_roll = mod_roll * \
-                    mod["base_tag_magnitude_modifiers"][magnitude_modifier_tag]
+                mod_roll = mod_roll *
+                mod["base_tag_magnitude_modifiers"][magnitude_modifier_tag]
 
         if "mod_multiplier" in base_type:
             mod_roll = mod_roll * base_type["mod_multiplier"]
