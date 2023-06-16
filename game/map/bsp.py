@@ -4,28 +4,41 @@ from math import sqrt
 from random import random
 from random import randrange
 from random import choice
+from random import randint
 
-from .tile import TileWall, TileSpace, TileDoor
+from .tile import TileWall, TileSpace, TileDoor, TileBillboardProp
+
 
 class Room:
     def __init__(self, x, y, h, w):
         self.x, self.y, self.h, self.w = x, y, h, w
+        self.randint = randint(0,3)
+
+    def __str__(self):
+        return str("room:{}-{}-{}-{}".format(self.x, self.y, self.w, self.h))
 
 class BSP:
     def __init__(self, w=30, h=30):
-        self.MAX = 8 # Cutoff for when we want to stop dividing sections
+        # Cutoff for when we want to stop dividing sections, should be range
+        self.MAX = 8
         self.w, self.h = w, h
         self.leaves = []
         self.tiles = defaultdict(TileWall)
         self.rooms = []
         self.generate_map()
-        
+
+    def get_room_bordered(self, x, y):
+        for room in self.rooms:
+            if x >= room.x-1 and x < room.x + room.w+1:
+                if y >= room.y-1 and y < room.y + room.h+1:
+                    return room
+
     def get_room(self, x, y):
         for room in self.rooms:
             if x >= room.x and x < room.x + room.w:
                 if y >= room.y and y < room.y + room.h:
                     return room
-        
+
     def random_split(self, min_y, min_x, max_y, max_x):
         # We want to keep splitting until the sections get down to the threshold
         seg_height = max_y - min_y
@@ -42,27 +55,27 @@ class BSP:
                 self.split_on_horizontal(min_y, min_x, max_y, max_x)
             else:
                 self.split_on_vertical(min_y, min_x, max_y, max_x)
-     
+
     def split_on_horizontal(self, min_y, min_x, max_y, max_x):
         split = (min_y + max_y) // 2 + choice((-2, -1, 0, 1, 2))
         self.random_split(min_y, min_x, split, max_x)
         self.random_split(split + 1, min_x, max_y, max_x)
 
-    def split_on_vertical(self, min_y, min_x, max_y, max_x):        
+    def split_on_vertical(self, min_y, min_x, max_y, max_x):
         split = (min_x + max_x) // 2 + choice((-2, -1, 0, 1, 2))
         self.random_split(min_y, min_x, max_y, split)
         self.random_split(min_y, split + 1, max_y, max_x)
 
     def carve_rooms(self):
         for leaf in self.leaves:
-            # We don't want to fill in every possible room or the 
+            # We don't want to fill in every possible room or the
             # dungeon looks too uniform
             if random() > 0.80: continue
             section_width = leaf[3] - leaf[1]
             section_height = leaf[2] - leaf[0]
 
-            # The actual room's height and width will be 60-100% of the 
-            # available section. 
+            # The actual room's height and width will be 60-100% of the
+            # available section.
             room_width = round(randrange(50, 100) / 100 * section_width)
             room_height = round(randrange(50, 100) / 100 * section_height)
 
@@ -77,11 +90,19 @@ class BSP:
                 room_start_x = leaf[1] + randrange(section_width - room_width)
             else:
                 room_start_x = leaf[1]
-    
+
             self.rooms.append(Room(room_start_x, room_start_y, room_height, room_width))
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     self.tiles[x, y] = TileSpace()
+
+            try:
+                for i in range(5):
+                    x = randint(room_start_x+2, (room_start_x+room_width)-2)
+                    y = randint(room_start_y+2, (room_start_y+room_height)-2)
+                    self.tiles[x, y] = TileBillboardProp()
+            except ValueError:
+                pass
 
     def are_rooms_adjacent(self, room1, room2):
         adj_ys = []
@@ -111,7 +132,7 @@ class BSP:
                 end_x = room2[0].x
             else:
                 start_x = room2[0].x + room2[0].w
-                end_x = room1.x                
+                end_x = room1.x
             for x in range(start_x, end_x):
                 self.tiles[x, y] = TileSpace()
 
@@ -168,10 +189,10 @@ class BSP:
 
         start_group += other_group
         groups.remove(other_group)
-        
+
     def connect_rooms(self):
         # Build a dictionary containing an entry for each room. Each bucket will
-        # hold a list of the adjacent rooms, weather they are adjacent along ys or 
+        # hold a list of the adjacent rooms, weather they are adjacent along ys or
         # xumns and the distance between them.
         #
         # Also build the initial groups (which start of as a list of individual rooms)
@@ -188,9 +209,9 @@ class BSP:
                     room_dict[key].append((other, adj[0], 'ys', self.distance_between_rooms(room, other)))
                 elif len(adj[1]) > 0:
                     room_dict[key].append((other, adj[1], 'xs', self.distance_between_rooms(room, other)))
-        
+
             groups.append([room])
-    
+
         while len(groups) > 1:
             self.find_closest_unconnect_groups(groups, room_dict)
 

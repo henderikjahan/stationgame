@@ -1,18 +1,30 @@
-from . import move_list as move  # fix this
 from game.stats.stat_data import item_mods
 
 
-class PlayerStat:
-    def __init__(self, player):
-        self.player = player
+class CharacterStats:
+    def __init__(self, character, stats_override={}):
+        self.character = character
 
         self.basic_stats = {
-            "max_HP": 50,  # Maximum Hit points
-            "current_HP": 50,  # Current HP
-            "max_AP": 3,  # Maximum Action points, which can be banked
+            "HP_current": 50,  # Current HP
+            "HP_max": 50,  # Maximum Hit points
+            "HP_regen": 0,
+
+            "AP_current": 0,
+            "AP_max": 3,  # Maximum Action points, which can be banked
             "AP_regen": 3,  # Turn Action points, determines the amount of AP the battlers can gain per turn at start
-            "HP_Regen": 0,
-            "more_generic_dmg": 0,
+
+            "generic": 0,
+            "assault": 0,
+            "tactics": 0,
+            "psi": 0,
+
+            "generic defense": 1,
+            "assault defense": 1,
+            "tactics defense": 1,
+            "psi defense": 1,
+
+            "increased_generic_dmg": 0,
             "increased_assault_dmg": 0,
             "increased_tactics_dmg": 0,
             "increased_psi_dmg": 0,
@@ -21,25 +33,20 @@ class PlayerStat:
             # "Physical Defense": 10,
             #  Damage reduction of receiving Psi attacks: damageReceived = 100/(100+defense)
             #  "Psi Defense": 10,
-        }
+        } | stats_override
 
-        # pluk deze van de equipmentlijst
+        self.status = {}
+
+        # TODO: pluk mods van de equipmentlijst, self.character.equipment
         self.current_mods = self.calculate_current_mods()
-
         self.current_total_mods = self.calculate_current_mod_totals()
+        self.current_stat = self.calculate_current_stats()
 
-        self.stat = self.calculate_current_stats()
-
-        # pluk deze ook uit de equipment - misschien als er geen wapen is, kick of slap toevoegen
-        self.moves = ["test"]
-
-        # basic attack moet gewoon een move worden die aan elk weapon type hangt (?)
-        self.basic_attack = "test"  # pluk dit uit equipment
 
     def calculate_current_mods(self):
         # ga door de items en pak de mods
         current_mods = []
-        for item in self.player.equipped_items:
+        for item in self.character.equipment:
             for mod in item["mods"]:
                 current_mods.append(mod)
         return current_mods
@@ -68,7 +75,10 @@ class PlayerStat:
     def update_current_mod_totals(self):
         self.current_total_mods
 
-    def go_through_item_mods(self, current_total_mods, relation, original_stats, callback):
+    def go_through_item_mods(
+        self, current_total_mods, relation,
+        original_stats, callback
+    ):
         result = original_stats
 
         for mod in current_total_mods:
@@ -90,18 +100,27 @@ class PlayerStat:
         current_total_mods = self.calculate_current_mod_totals()
 
         new_flat_stats = self.go_through_item_mods(
-            current_total_mods, "flat_addition", self.basic_stats, lambda x, y: x + y)
+            current_total_mods, "flat_addition",
+            self.basic_stats, lambda x, y: x + y)
 
         increased_stats = self.go_through_item_mods(
-            current_total_mods, "percentage_increase", new_flat_stats, lambda x, y: round(x*(1+(y/100))))
+            current_total_mods, "percentage_increase",
+            new_flat_stats, lambda x, y: round(x*(1+(y/100))))
 
         return increased_stats
 
     def update_current_stats(self):
-        self.stat = self.calculate_current_stats()
+        self.current_stats = self.calculate_current_stats()
 
+    # Stat-specific methods start here
     def update_hp(self, amount=0):
-        new_hp = self.stat["current_HP"] + amount
-        new_hp = min(max(0, new_hp), self.stat["max_HP"])
-        self.stat["current_HP"] = new_hp
-        return self.stat["current_HP"]
+        new_hp = self.current_stats["HP_current"] + amount
+        new_hp = min(max(0, new_hp), self.current_stats["HP_max"])
+        self.current_stats["HP_current"] = new_hp
+        return self.current_stats["HP_current"]
+
+    def update_ap(self, amount=0):
+        new_ap = self.current_stats["AP_current"] + amount
+        new_ap = min(max(0, new_ap), self.current_stats["AP_max"])
+        self.current_stats["AP_current"] = new_ap
+        return self.current_stats["AP_current"]
